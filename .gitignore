@@ -1,0 +1,84 @@
+# ==============================================================================
+# IntelliShield Production Git Ignore Specification
+# Keeps repository strictly limited to runtime project source and configurations
+# ==============================================================================
+
+# Python virtual environments, compiled bytecode, and caches
+.venv/
+*/.venv/
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*/*/*/__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Rust / Cargo build outputs
+target/
+*/target/
+*/*/target/
+Cargo.lock
+
+# Compiled binaries and debug symbols
+*.exe
+*.dll
+*.so
+*.dylib
+*.pdb
+
+# Local environment variables and logs
+.env
+.env.*
+*.log
+
+# Operating system and editor metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Development, testing, and agent workspace caches
+.agents/
+*/.agents/
+.gemini/
+*/.gemini/
+scratch/
+*/scratch/
+qa/
+PROJECT_INFO.md
+GEMINI.md
+*/GEMINI.md
+*/AGENTS.md
+
+# Large media files and archives
+*.mp4
+*.rar
+*.zip
+*.tar.gz
+*.7z
+Industrial Project/assets/defense_preview/
+Industrial Project/assets/handbook_preview/
+Industrial Project/assets/paper_preview/
+Industrial Project/assets/pdf_preview/
+
+# Academic Review Presentations, Coursework, Attendance & Monographs
+Final Review/
+PPT/
+Printout/
+Attendance.*
+Fall Semester*
+FinalPPT.*
+PROJECT---I.pdf
+Review 1*
+TimeLine.xlsx
+IntelliShield_Review2_Master_Executive_Handbook.pdf
+Industrial Project/presentations/
+Industrial Project/reports/
+Industrial Project/scripts/
+~$*
+*/~$*
+*/*/~$*

@@ -1,0 +1,160 @@
+/* =============================================================================
+   INTELLISHIELD DESIGN SYSTEM TOKENS
+   Strict adherence: Dark obsidian default with zero white light flash.
+   Light theme with WCAG AA compliance. Semantic tier colors immutable.
+   No raw unicode emojis.
+============================================================================= */
+
+:root {
+  color-scheme: dark;
+
+  /* --- Backgrounds --- */
+  --bg-deep: #050811;
+  --bg-surface: #0a1120;
+  --bg-surface-elevated: #0f182c;
+  --bg-card: rgba(15, 24, 44, 0.75);
+  --bg-card-hover: rgba(23, 37, 84, 0.85);
+  --bg-card-solid: #0f192d;
+  --bg-input: #070d18;
+  --bg-glass: rgba(10, 17, 32, 0.7);
+  --bg-glass-heavy: rgba(10, 17, 32, 0.88);
+
+  /* --- Borders & Hairlines --- */
+  --border-subtle: rgba(56, 189, 248, 0.12);
+  --border-medium: rgba(56, 189, 248, 0.22);
+  --border-strong: rgba(56, 189, 248, 0.40);
+  --border-glow: rgba(0, 240, 255, 0.55);
+
+  /* --- Brand / Primary Accents (Cyberpunk Cyan & Electric Blue) --- */
+  --primary-cyan: #00f0ff;
+  --primary-cyan-dim: #38bdf8;
+  --primary-blue: #0284c7;
+  --primary-indigo: #6366f1;
+  --accent-glow: rgba(0, 240, 255, 0.22);
+
+  /* --- Text / Typography --- */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #050811;
+
+  /* --- Semantic Reputation Tiers (Identical across themes) --- */
+  --tier-clean: #10b981;
+  --tier-clean-glow: rgba(16, 185, 129, 0.25);
+  --tier-clean-bg: rgba(16, 185, 129, 0.12);
+  --tier-clean-border: rgba(16, 185, 129, 0.35);
+
+  --tier-monitored: #06b6d4;
+  --tier-monitored-glow: rgba(6, 182, 212, 0.25);
+  --tier-monitored-bg: rgba(6, 182, 212, 0.12);
+  --tier-monitored-border: rgba(6, 182, 212, 0.35);
+
+  --tier-throttled: #f59e0b;
+  --tier-throttled-glow: rgba(245, 158, 11, 0.25);
+  --tier-throttled-bg: rgba(245, 158, 11, 0.12);
+  --tier-throttled-border: rgba(245, 158, 11, 0.38);
+
+  --tier-blocked: #ef4444;
+  --tier-blocked-glow: rgba(239, 68, 68, 0.28);
+  --tier-blocked-bg: rgba(239, 68, 68, 0.14);
+  --tier-blocked-border: rgba(239, 68, 68, 0.45);
+
+  /* --- Status / Badges --- */
+  --status-live-bg: rgba(16, 185, 129, 0.15);
+  --status-live-text: #10b981;
+  --status-demo-bg: rgba(56, 189, 248, 0.15);
+  --status-demo-text: #38bdf8;
+
+  /* --- Canvas Variables (Exported for JS rendering) --- */
+  --canvas-bg: #050811;
+  --canvas-grid: rgba(56, 189, 248, 0.08);
+  --canvas-particle: rgba(0, 240, 255, 0.85);
+  --canvas-particle-trail: rgba(0, 240, 255, 0.45);
+  --canvas-chart-line: #00f0ff;
+  --canvas-chart-fill: rgba(0, 240, 255, 0.12);
+  --canvas-chart-p99: #f59e0b;
+  --canvas-globe-dots: rgba(56, 189, 248, 0.45);
+  --canvas-globe-glow: rgba(2, 132, 199, 0.3);
+
+  /* --- Typography Stacks --- */
+  --font-heading: 'Sora', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, Monaco, monospace;
+
+  /* --- Dimensions & Layout Metrics --- */
+  --nav-height: 64px;
+  --mobile-tab-height: 60px;
+  --max-content-width: 1440px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* --- Transitions & Timing Curves --- */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 450ms;
+
+  /* --- Atmospheric Shadows --- */
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 0 1px 1px var(--border-subtle);
+  --shadow-glow: 0 0 24px -4px var(--accent-glow);
+  --shadow-pop: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 1px 1px var(--border-medium);
+}
+
+/* =============================================================================
+   LIGHT THEME OVERRIDES
+   Carefully calibrated: off-white base with deep cyan/indigo accents and WCAG AA text.
+============================================================================= */
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* --- Backgrounds --- */
+  --bg-deep: #f4f6fa;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #edf2f7;
+  --bg-card: rgba(255, 255, 255, 0.88);
+  --bg-card-hover: rgba(241, 245, 249, 0.95);
+  --bg-card-solid: #ffffff;
+  --bg-input: #f8fafc;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-glass-heavy: rgba(255, 255, 255, 0.95);
+
+  /* --- Borders & Hairlines --- */
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-medium: rgba(15, 23, 42, 0.16);
+  --border-strong: rgba(2, 132, 199, 0.35);
+  --border-glow: rgba(2, 132, 199, 0.45);
+
+  /* --- Brand / Primary Accents (High Contrast Cyan/Blue) --- */
+  --primary-cyan: #0284c7;
+  --primary-cyan-dim: #0369a1;
+  --primary-blue: #1d4ed8;
+  --primary-indigo: #4338ca;
+  --accent-glow: rgba(2, 132, 199, 0.2);
+
+  /* --- Text / Typography --- */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+
+  /* --- Canvas Variables (Exported for Light Repaint) --- */
+  --canvas-bg: #f4f6fa;
+  --canvas-grid: rgba(15, 23, 42, 0.06);
+  --canvas-particle: rgba(2, 132, 199, 0.75);
+  --canvas-particle-trail: rgba(2, 132, 199, 0.4);
+  --canvas-chart-line: #0284c7;
+  --canvas-chart-fill: rgba(2, 132, 199, 0.12);
+  --canvas-chart-p99: #d97706;
+  --canvas-globe-dots: rgba(2, 132, 199, 0.5);
+  --canvas-globe-glow: rgba(186, 230, 253, 0.55);
+
+  /* --- Atmospheric Shadows --- */
+  --shadow-card: 0 2px 12px -2px rgba(15, 23, 42, 0.08), 0 0 1px 1px var(--border-subtle);
+  --shadow-glow: 0 0 20px -4px rgba(2, 132, 199, 0.2);
+  --shadow-pop: 0 16px 32px -8px rgba(15, 23, 42, 0.14), 0 0 1px 1px var(--border-medium);
+}

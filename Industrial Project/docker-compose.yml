@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  intellishield:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: intellishield-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/intellishield/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

@@ -1,0 +1,4 @@
+# IntelliShield Layer-7 ML Ingress Proxy Dependencies
+numpy>=1.24.0
+scikit-learn>=1.3.0
+joblib>=1.3.0

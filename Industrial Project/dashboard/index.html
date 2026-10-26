@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>IntelliShield | Intelligent Reverse Proxy & Threat Mitigation Console</title>
+  <meta name="description" content="High-Throughput Memory-Safe Reverse Proxy with Asynchronous Machine Learning Threat Mitigation">
+  <meta name="theme-color" content="#050811">
+
+  <!-- Open Graph / Meta -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="IntelliShield Console">
+  <meta property="og:description" content="Memory-Safe Rust Reverse Proxy with Asynchronous Isolation Forest ML Threat Scoring">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Favicons (Inline SVG Data URL & Fallback) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4L7 11V22C7 33.2 14.3 43.6 24 46C33.7 43.6 41 33.2 41 22V11L24 4Z' fill='%23050811' stroke='%2300f0ff' stroke-width='3'/%3E%3Ccircle cx='24' cy='24' r='4' fill='%2300f0ff'/%3E%3Cpath d='M24 12V24L32 30M24 24L16 30' stroke='%2300f0ff' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Zero-Flash Theme Initialization Script (Runs synchronously before first paint) -->
+  <script>
+    (function() {
+      try {
+        var urlTheme = window.location.search.indexOf('theme=light') !== -1 ? 'light' : (window.location.search.indexOf('theme=dark') !== -1 ? 'dark' : null);
+        var savedTheme = localStorage.getItem('intellishield-theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = urlTheme || ((savedTheme === 'light' || savedTheme === 'dark') ? savedTheme : (prefersDark ? 'dark' : 'light'));
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Google Fonts: Sora, Inter, JetBrains Mono with Fallback Stacks -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Design System Style Modules -->
+  <link rel="stylesheet" href="./css/tokens.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/layout.css">
+  <link rel="stylesheet" href="./css/animations.css">
+  <link rel="stylesheet" href="./css/pages.css">
+</head>
+<body>
+  <!-- Accessibility Skip Link -->
+  <a href="#app" class="skip-link">Skip to main content</a>
+
+  <!-- Atmospheric Background System (Reskinned from MBJ visual DNA) -->
+  <div class="bg-base" aria-hidden="true"></div>
+  <div class="bg-rings" aria-hidden="true"></div>
+  <canvas id="packetfield" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  <div id="progress" aria-hidden="true"></div>
+
+  <!-- Preloader Screen -->
+  <div id="preload" aria-hidden="true">
+    <div class="pl-emblem">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 4L7 11V22C7 33.2 14.3 43.6 24 46C33.7 43.6 41 33.2 41 22V11L24 4Z" stroke="var(--primary-cyan)" stroke-width="2.5" fill="rgba(0, 240, 255, 0.08)"/>
+        <path d="M24 12V24L32 30M24 24L16 30" stroke="var(--primary-cyan)" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="24" cy="24" r="3.5" fill="var(--primary-cyan)"/>
+        <circle cx="32" cy="30" r="2.5" fill="var(--primary-cyan)"/>
+        <circle cx="16" cy="30" r="2.5" fill="var(--primary-cyan)"/>
+      </svg>
+    </div>
+    <div class="pl-brand">INTELLI<span>SHIELD</span></div>
+    <div class="pl-line"><i></i></div>
+  </div>
+  <script>
+    if (navigator.webdriver || window.location.search.indexOf('no-preload') !== -1) {
+      var pl = document.getElementById('preload');
+      if (pl) pl.classList.add('done');
+    }
+  </script>
+
+  <div id="root">
+    <!-- Desktop Sticky Navigation -->
+    <header id="mainNav" role="banner">
+      <div class="nav-left">
+        <a href="#/" class="brand-emblem" aria-label="IntelliShield Home">
+          <div class="brand-logo-icon">
+            <svg viewBox="0 0 48 48" fill="none">
+              <path d="M24 4L7 11V22C7 33.2 14.3 43.6 24 46C33.7 43.6 41 33.2 41 22V11L24 4Z" stroke="var(--primary-cyan)" stroke-width="2.5" fill="rgba(0, 240, 255, 0.1)"/>
+              <path d="M24 14V24L30 28M24 24L18 28" stroke="var(--primary-cyan)" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="24" cy="24" r="3" fill="var(--primary-cyan)"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">INTELLI<span>SHIELD</span></span>
+            <span class="brand-tag">PROX-SEC v0.1.0</span>
+          </div>
+        </a>
+
+        <nav class="nav-links" aria-label="Primary Navigation">
+          <a href="#/" class="nav-link" data-cursor="Overview">Overview</a>
+          <a href="#/console" class="nav-link" data-cursor="Console">Live Console</a>
+          <a href="#/architecture" class="nav-link" data-cursor="Arch">Architecture</a>
+          <a href="#/ml" class="nav-link" data-cursor="ML & Mitigation">ML & Mitigation</a>
+          <a href="#/globe" class="nav-link" data-cursor="Globe">Global View</a>
+        </nav>
+      </div>
+
+      <div class="nav-right">
+        <!-- Command Palette Trigger -->
+        <button class="cmd-k-btn" id="cmdKTrigger" aria-label="Open command palette (Ctrl+K)"
+                data-tooltip-title="Spotlight Command Palette"
+                data-tooltip-desc="Quick command search, route jumping, NOC mode, and theme shortcuts (Ctrl+K / Cmd+K)."
+                data-tooltip-action="Click or press Ctrl+K to open spotlight">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <span>Search</span>
+          <kbd>Ctrl+K</kbd>
+        </button>
+
+        <!-- Live / Demo Indicator Badge -->
+        <div id="navSourceBadge" class="badge badge-demo" role="status" aria-live="polite"
+             data-tooltip-title="Telemetry Data Source"
+             data-tooltip-desc="LIVE: Real-time telemetry streaming from running proxy (:8080). DEMO: Deterministic client-side multi-phase simulation."
+             data-tooltip-action="Click Settings to toggle mode or poll interval"
+             data-tooltip-badge="SYSTEM STATE">
+          <span class="pulse-dot"></span>
+          <span id="navSourceLabel">DEMO</span>
+        </div>
+
+        <!-- Theme Toggle Button -->
+        <button class="btn btn-ghost btn-icon" id="themeToggleBtn" aria-label="Toggle dark and light theme" data-cursor="Theme"
+                data-tooltip-title="Toggle Color Theme"
+                data-tooltip-desc="Switches between Dark Obsidian (#050811) and Light Slate (#f4f6fa). All 2D/3D canvases repaint automatically."
+                data-tooltip-action="Click to toggle theme"
+                data-tooltip-badge="INTERFACE">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+
+        <!-- Settings Drawer Trigger -->
+        <button class="btn btn-ghost btn-icon" id="settingsToggleBtn" aria-label="Open Settings" data-cursor="Settings"
+                data-tooltip-title="System & Simulation Settings"
+                data-tooltip-desc="Configure telemetry poll interval, toggle visual particle fields, 3D tilt cards, custom cursor, and noise effects."
+                data-tooltip-action="Click to open settings panel"
+                data-tooltip-badge="PREFERENCES">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Master Dynamic Page View Container -->
+    <main id="app" role="main"></main>
+
+    <!-- Mobile Bottom Tab Bar -->
+    <nav id="mobileTabBar" aria-label="Mobile Navigation">
+      <a href="#/" class="tab-item" aria-label="Overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Overview</span>
+      </a>
+      <a href="#/console" class="tab-item" aria-label="Console">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <span>Console</span>
+      </a>
+      <a href="#/architecture" class="tab-item" aria-label="Architecture">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"/></svg>
+        <span>Arch</span>
+      </a>
+      <a href="#/ml" class="tab-item" aria-label="ML & Mitigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>ML & Mit</span>
+      </a>
+      <a href="#/globe" class="tab-item" aria-label="Global View">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+        <span>Global</span>
+      </a>
+    </nav>
+
+    <!-- Mobile Slide-up "More" Sheet -->
+    <div id="mobileMoreSheet" role="dialog" aria-modal="true" aria-label="Additional Navigation">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Security Console Modules</div>
+      <div class="sheet-grid">
+        <a href="#/ml" class="sheet-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/></svg>
+          <span>ML Threat Lab</span>
+        </a>
+        <a href="#/mitigation" class="sheet-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Token Bucket</span>
+        </a>
+        <a href="#/benchmarks" class="sheet-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Benchmarks</span>
+        </a>
+        <a href="#/globe" class="sheet-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          <span>Global View</span>
+        </a>
+        <a href="#/docs" class="sheet-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          <span>API & Docs</span>
+        </a>
+        <a href="#/research" class="sheet-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Viva Q&A</span>
+        </a>
+        <a href="#/settings" class="sheet-item" id="mobileSettingsLink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Backdrop for Drawers and Sheets -->
+    <div id="drawerBackdrop" class="drawer-backdrop" aria-hidden="true"></div>
+
+    <!-- Settings Drawer -->
+    <aside id="settingsDrawer" class="drawer" role="dialog" aria-modal="true" aria-label="Settings"></aside>
+  </div>
+
+  <!-- Custom Cursor Elements (Desktop fine pointers only) -->
+  <div id="cursorDot" aria-hidden="true"></div>
+  <div id="cursorRing" aria-hidden="true"></div>
+  <div id="cursorLabel" aria-hidden="true"></div>
+
+  <!-- Master ES Module Entrypoint -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

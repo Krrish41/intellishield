@@ -1,0 +1,401 @@
+/* =============================================================================
+   INTELLISHIELD SHELL & RESPONSIVE LAYOUT
+   Desktop Top Navigation + Mobile Bottom Tab Bar & Slide-up More Sheet
+============================================================================= */
+
+/* Main App Shell Container */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  position: relative;
+  z-index: 1;
+}
+
+/* =============================================================================
+   DESKTOP TOP NAVIGATION (Apple Liquid Glass Translucent Design)
+============================================================================= */
+
+#mainNav {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: var(--nav-height);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: rgba(6, 10, 22, 0.78);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: background var(--duration-normal) ease,
+              border-color var(--duration-normal) ease,
+              backdrop-filter var(--duration-normal) ease,
+              box-shadow var(--duration-normal) ease,
+              height var(--duration-normal) ease;
+}
+
+[data-theme="light"] #mainNav {
+  background: rgba(248, 250, 252, 0.85);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+#mainNav.scrolled {
+  height: 56px;
+  background: rgba(4, 7, 16, 0.92);
+  border-bottom-color: rgba(0, 240, 255, 0.22);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 240, 255, 0.15);
+}
+
+[data-theme="light"] #mainNav.scrolled {
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom-color: rgba(2, 132, 199, 0.22);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.brand-emblem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+.brand-logo-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-logo-icon svg {
+  width: 100%;
+  height: 100%;
+  transition: transform var(--duration-normal) var(--ease-spring);
+}
+
+.brand-emblem:hover .brand-logo-icon svg {
+  transform: scale(1.1) rotate(2deg);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="light"] .brand-name {
+  color: #0f172a;
+}
+
+.brand-name span {
+  color: var(--primary-cyan);
+}
+
+.brand-tag {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--primary-cyan);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+/* Nav Links (Desktop) */
+.nav-links {
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (min-width: 860px) {
+  .nav-links {
+    display: flex;
+  }
+}
+
+.nav-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  padding: 7px 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: all var(--duration-fast) ease;
+  white-space: nowrap;
+  position: relative;
+}
+
+[data-theme="light"] .nav-link {
+  color: rgba(15, 23, 42, 0.75);
+}
+
+.nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+[data-theme="light"] .nav-link:hover {
+  color: #000000;
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.nav-link.active {
+  color: var(--primary-cyan);
+  background: rgba(0, 240, 255, 0.12);
+  border-color: rgba(0, 240, 255, 0.32);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.22);
+}
+
+[data-theme="light"] .nav-link.active {
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.12);
+  border-color: rgba(2, 132, 199, 0.3);
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.18);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 10px;
+  right: 10px;
+  height: 2px;
+  background: var(--primary-cyan);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 8px var(--primary-cyan);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  #mainNav {
+    padding: 0 10px;
+  }
+  .brand-text {
+    max-width: 140px;
+  }
+  .brand-tag {
+    display: none;
+  }
+  .nav-right {
+    gap: 4px;
+  }
+  #settingsToggleBtn {
+    display: none;
+  }
+}
+
+.cmd-k-btn {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  cursor: pointer;
+  min-height: 34px;
+}
+
+@media (min-width: 1280px) {
+  .cmd-k-btn {
+    display: inline-flex;
+  }
+}
+
+.cmd-k-btn kbd {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+/* =============================================================================
+   MAIN VIEWPORT CONTAINER (#app)
+============================================================================= */
+
+#app {
+  flex: 1;
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: 20px 16px calc(var(--mobile-tab-height) + 24px) 16px;
+  position: relative;
+}
+
+@media (min-width: 769px) {
+  #app {
+    padding: 24px 32px 48px 32px;
+  }
+}
+
+/* =============================================================================
+   MOBILE BOTTOM TAB BAR
+============================================================================= */
+
+#mobileTabBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--mobile-tab-height);
+  background: var(--bg-glass-heavy);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (min-width: 1100px) {
+  #mobileTabBar {
+    display: none;
+  }
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+  height: 100%;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.68rem;
+  font-weight: 600;
+  transition: color var(--duration-fast) ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-item svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.8;
+}
+
+.tab-item:hover,
+.tab-item.active {
+  color: var(--primary-cyan);
+}
+
+.tab-item.active svg {
+  filter: drop-shadow(0 0 6px var(--primary-cyan));
+}
+
+/* =============================================================================
+   MOBILE SLIDE-UP "MORE" SHEET
+============================================================================= */
+
+#mobileMoreSheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 16px 20px calc(var(--mobile-tab-height) + 20px) 20px;
+  box-shadow: var(--shadow-pop);
+  z-index: 999;
+  transform: translateY(105%);
+  transition: transform var(--duration-normal) var(--ease-spring);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+#mobileMoreSheet.open {
+  transform: translateY(0);
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+  margin: 0 auto 16px auto;
+}
+
+.sheet-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+
+.sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.sheet-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  min-height: 44px;
+}
+
+.sheet-item svg {
+  width: 18px;
+  height: 18px;
+  color: var(--primary-cyan);
+}
+
+.sheet-item:hover, .sheet-item.active {
+  background: var(--bg-card-hover);
+  border-color: var(--border-strong);
+}

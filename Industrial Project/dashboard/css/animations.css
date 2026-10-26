@@ -1,0 +1,253 @@
+/* =============================================================================
+   INTELLISHIELD ANIMATIONS & MOTION UTILITIES
+   Adapted from MBJ: 3D Scroll Reveal, Hero Rings, Marquee, Cursor & Touch Trails
+============================================================================= */
+
+/* Smooth Elevation Scroll Reveal */
+.reveal, .d3 {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.reveal.in, .d3.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.delay1 { transition-delay: 0.08s; }
+.delay2 { transition-delay: 0.16s; }
+.delay3 { transition-delay: 0.24s; }
+.delay4 { transition-delay: 0.32s; }
+.delay5 { transition-delay: 0.40s; }
+
+/* Hero Emblem Animations */
+@keyframes floatEmblem {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(1deg); }
+}
+
+@keyframes pulseHalo {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 0.85; }
+}
+
+@keyframes spinClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinCounter {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+.float-anim {
+  animation: floatEmblem 6s infinite ease-in-out;
+}
+
+.pulse-halo-anim {
+  animation: pulseHalo 4s infinite ease-in-out;
+}
+
+.spin-slow {
+  animation: spinClockwise 36s infinite linear;
+}
+
+.spin-reverse-slow {
+  animation: spinCounter 48s infinite linear;
+}
+
+/* Infinite Marquee */
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  user-select: none;
+  display: flex;
+  position: relative;
+  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: max-content;
+  animation: marqueeScroll 28s linear infinite;
+}
+
+.marquee-track span,
+.marquee-track .chip {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+}
+
+.marquee-container:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* =============================================================================
+   CUSTOM CURSOR & TOUCH VISUALS
+============================================================================= */
+
+/* Fine Pointer Desktop Cursor */
+body.custom-cursor-active {
+  cursor: none !important;
+}
+
+body.custom-cursor-active a,
+body.custom-cursor-active button,
+body.custom-cursor-active input[type="range"],
+body.custom-cursor-active .clickable {
+  cursor: none !important;
+}
+
+/* Keep native cursor on text fields for accessibility */
+body.custom-cursor-active input[type="text"],
+body.custom-cursor-active input[type="search"],
+body.custom-cursor-active textarea {
+  cursor: text !important;
+}
+
+#cursorDot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  background-color: var(--primary-cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10001;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s ease, transform 0.05s linear;
+  box-shadow: 0 0 8px var(--primary-cyan);
+}
+
+#cursorRing {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--primary-cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  transition: width 0.22s var(--ease-spring),
+              height 0.22s var(--ease-spring),
+              border-color 0.2s ease,
+              background-color 0.2s ease,
+              opacity 0.2s ease;
+}
+
+#cursorRing.hovering {
+  width: 52px;
+  height: 52px;
+  background-color: rgba(0, 240, 255, 0.08);
+  border-color: var(--primary-cyan);
+}
+
+#cursorRing.active-click {
+  width: 24px;
+  height: 24px;
+  background-color: rgba(0, 240, 255, 0.25);
+}
+
+#cursorLabel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 10002;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-inverse);
+  background: var(--primary-cyan);
+  padding: 2px 6px;
+  border-radius: 3px;
+  transform: translate(14px, 14px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#cursorLabel.visible {
+  opacity: 1;
+}
+
+/* Touch Tap Ripple */
+.touch-ripple {
+  position: fixed;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.45) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripplePop 0.45s ease-out forwards;
+}
+
+@keyframes ripplePop {
+  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+/* =============================================================================
+   PREFERS-REDUCED-MOTION OVERRIDES
+============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal, .d3 {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .float-anim, .pulse-halo-anim, .spin-slow, .spin-reverse-slow {
+    animation: none !important;
+  }
+
+  .marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .tilt {
+    transform: none !important;
+  }
+
+  #cursorDot, #cursorRing, #cursorLabel {
+    display: none !important;
+  }
+
+  body.custom-cursor-active {
+    cursor: auto !important;
+  }
+}
+
+@media (pointer: coarse), (hover: none) {
+  #cursorDot, #cursorRing, #cursorLabel {
+    display: none !important;
+  }
+
+  body.custom-cursor-active {
+    cursor: auto !important;
+  }
+}

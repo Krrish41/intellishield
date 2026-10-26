@@ -1,0 +1,17 @@
+{
+  "name": "IntelliShield Cybersecurity Web Console",
+  "short_name": "IntelliShield",
+  "description": "High-Throughput Memory-Safe Reverse Proxy with Asynchronous Machine Learning Threat Mitigation",
+  "start_url": "./index.html#/",
+  "display": "standalone",
+  "background_color": "#050811",
+  "theme_color": "#050811",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4L7 11V22C7 33.2 14.3 43.6 24 46C33.7 43.6 41 33.2 41 22V11L24 4Z' fill='%23050811' stroke='%2300f0ff' stroke-width='3'/%3E%3Ccircle cx='24' cy='24' r='4' fill='%2300f0ff'/%3E%3Cpath d='M24 12V24L32 30M24 24L16 30' stroke='%2300f0ff' stroke-width='2'/%3E%3C/svg%3E",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
