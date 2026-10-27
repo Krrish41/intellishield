@@ -680,3 +680,108 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .cyber-tooltip.tier-blocked .tooltip-badge { color: var(--tier-blocked); border-color: var(--tier-blocked); }
 .cyber-tooltip.tier-blocked .tooltip-action { color: var(--tier-blocked); }
 .cyber-tooltip.tier-blocked .tooltip-action-arrow { color: var(--tier-blocked); }
+
+/* =============================================================================
+   ENGINEERING BLUEPRINT ENLARGEMENT & ZOOM MODAL
+   ============================================================================= */
+.blueprint-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 6, 15, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.blueprint-modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.blueprint-modal-card {
+  background: var(--bg-card-solid);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-md);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 240, 255, 0.15);
+  max-width: 95vw;
+  max-height: 92vh;
+  width: 1200px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(12px) scale(0.98);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.blueprint-modal-backdrop.open .blueprint-modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.blueprint-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface-elevated);
+}
+
+.blueprint-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.blueprint-modal-close:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.blueprint-modal-body {
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #02050c;
+  padding: 20px;
+  position: relative;
+}
+
+.blueprint-viewport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+  overflow: auto;
+}
+
+.blueprint-zoomable-img {
+  max-width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  cursor: crosshair !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center center;
+  user-select: none;
+}
+
+.blueprint-zoomable-img.zoomed {
+  transform: scale(2.0);
+}

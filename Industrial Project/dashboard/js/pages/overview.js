@@ -48,13 +48,6 @@ export class OverviewPage {
                  data-tooltip-badge="NAVIGATION">
                 ${Icons.network(16)} Inspect System Topology
               </a>
-              <a href="#/console" class="btn btn-ghost" data-cursor="Console"
-                 data-tooltip-title="Run Live Attack Demos in Console"
-                 data-tooltip-desc="Simulate volumetric floods, low-and-slow scrapers, credential stuffing, and Review 3 demo sequences directly in the live console."
-                 data-tooltip-action="Click to launch Live Telemetry Console"
-                 data-tooltip-badge="NAVIGATION">
-                ${Icons.zap(16)} Run Live Attack Demos
-              </a>
             </div>
           </div>
 

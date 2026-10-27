@@ -164,26 +164,7 @@ body.custom-cursor-active textarea {
 }
 
 #cursorLabel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 10002;
-  font-size: 0.68rem;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-inverse);
-  background: var(--primary-cyan);
-  padding: 2px 6px;
-  border-radius: 3px;
-  transform: translate(14px, 14px);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-#cursorLabel.visible {
-  opacity: 1;
+  display: none !important;
 }
 
 /* Touch Tap Ripple */

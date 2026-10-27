@@ -33,6 +33,10 @@ export class ArchitecturePage {
     if (this.stepperInterval) {
       clearInterval(this.stepperInterval);
     }
+    if (this.blueprintEscHandler) {
+      window.removeEventListener('keydown', this.blueprintEscHandler);
+      this.blueprintEscHandler = null;
+    }
   }
 
   render() {
@@ -153,14 +157,20 @@ export class ArchitecturePage {
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px;">
             <!-- System Architecture Diagram Card -->
-            <div class="glass-panel arch-img-card" style="padding: 16px; overflow: hidden; background: rgba(5, 8, 17, 0.6);">
+            <div class="glass-panel arch-img-card blueprint-card-trigger" 
+                 data-src="./assets/system_architecture.png" 
+                 data-title="Fig. 1: End-to-End System Architecture (Wire-Speed Fast-Path)"
+                 style="padding: 16px; overflow: hidden; background: rgba(5, 8, 17, 0.6); cursor: pointer;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <strong style="font-size: 0.9rem; color: var(--primary-cyan);">Fig. 1: End-to-End System Architecture</strong>
-                <span class="badge badge-clean">Wire-Speed Fast-Path</span>
+                <span class="badge badge-clean">Click to Enlarge &amp; Zoom</span>
               </div>
-              <div class="arch-img-wrapper" style="overflow: hidden; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <div class="arch-img-wrapper" style="overflow: hidden; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); position: relative;">
                 <img src="./assets/system_architecture.png" alt="IntelliShield End-to-End System Architecture" 
                      class="img-zoomable" style="width: 100%; height: auto; display: block; object-fit: contain;">
+                <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(5, 8, 17, 0.85); backdrop-filter: blur(8px); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-glow); font-size: 0.72rem; color: var(--primary-cyan); font-family: var(--font-mono); pointer-events: none;">
+                  🔍 Click to Enlarge
+                </div>
               </div>
               <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4;">
                 Decoupled ingress proxy (Rust Tokio, Axum) forwarding zero-copy byte buffers to backend on port 3000, emitting lock-free telemetry to port 5001.
@@ -168,14 +178,20 @@ export class ArchitecturePage {
             </div>
 
             <!-- Data Flow Diagram Card -->
-            <div class="glass-panel arch-img-card" style="padding: 16px; overflow: hidden; background: rgba(5, 8, 17, 0.6);">
+            <div class="glass-panel arch-img-card blueprint-card-trigger" 
+                 data-src="./assets/data_flow_diagram.png" 
+                 data-title="Fig. 2: Telemetry &amp; Mitigation Data Flow (Sliding-Window 5.0s Pipeline)"
+                 style="padding: 16px; overflow: hidden; background: rgba(5, 8, 17, 0.6); cursor: pointer;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <strong style="font-size: 0.9rem; color: var(--tier-monitored);">Fig. 2: Telemetry & Mitigation Data Flow</strong>
-                <span class="badge badge-monitored">Sliding Window 5.0s</span>
+                <strong style="font-size: 0.9rem; color: var(--tier-monitored);">Fig. 2: Telemetry &amp; Mitigation Data Flow</strong>
+                <span class="badge badge-monitored">Click to Enlarge &amp; Zoom</span>
               </div>
-              <div class="arch-img-wrapper" style="overflow: hidden; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <div class="arch-img-wrapper" style="overflow: hidden; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); position: relative;">
                 <img src="./assets/data_flow_diagram.png" alt="IntelliShield Data Flow and Threat Scoring Diagram" 
                      class="img-zoomable" style="width: 100%; height: auto; display: block; object-fit: contain;">
+                <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(5, 8, 17, 0.85); backdrop-filter: blur(8px); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-glow); font-size: 0.72rem; color: var(--tier-monitored); font-family: var(--font-mono); pointer-events: none;">
+                  🔍 Click to Enlarge
+                </div>
               </div>
               <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4;">
                 Asynchronous feature extraction pipeline converting raw TCP telemetry into 8D behavioral matrices evaluated against tree estimators.
@@ -305,6 +321,29 @@ export class ArchitecturePage {
           </div>
           <div id="drawerNodeBody" style="display: flex; flex-direction: column; gap: 16px;"></div>
         </aside>
+
+        <!-- Engineering Blueprint Enlargement & Zoom Modal -->
+        <div id="blueprintModal" class="blueprint-modal-backdrop" role="dialog" aria-modal="true" aria-label="High-Resolution Blueprint Viewer">
+          <div class="blueprint-modal-card">
+            <div class="blueprint-modal-header">
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span class="badge badge-clean">HIGH-RESOLUTION BLUEPRINT</span>
+                <h4 id="blueprintModalHeading" style="margin: 0; font-size: 0.95rem; color: var(--text-primary);"></h4>
+              </div>
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <span id="blueprintZoomHint" style="font-size: 0.78rem; color: var(--primary-cyan); font-family: var(--font-mono);">
+                  Click image to toggle 2x zoom
+                </span>
+                <button id="blueprintModalClose" class="blueprint-modal-close" aria-label="Close modal">&times;</button>
+              </div>
+            </div>
+            <div class="blueprint-modal-body">
+              <div class="blueprint-viewport" id="blueprintViewport">
+                <img id="blueprintModalImg" src="" alt="Enlarged Engineering Blueprint" class="blueprint-zoomable-img">
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -317,23 +356,101 @@ export class ArchitecturePage {
   }
 
   attachEvents() {
-    // Simulated request buttons
-    this.container.querySelector('#btnSendClean')?.addEventListener('click', () => {
+    // Helper to pulse button on click for tactile confirmation
+    const pulseBtn = (btn) => {
+      if (!btn) return;
+      btn.style.transform = 'scale(0.95)';
+      btn.style.boxShadow = '0 0 16px rgba(0, 240, 255, 0.4)';
+      setTimeout(() => {
+        btn.style.transform = '';
+        btn.style.boxShadow = '';
+      }, 250);
+    };
+
+    // Simulated request buttons with prominent packet dispatch
+    this.container.querySelector('#btnSendClean')?.addEventListener('click', (e) => {
+      pulseBtn(e.currentTarget);
       this.topology?.sendSimulatedPacket('Clean');
       this.setLatencyReadout(0.82);
     });
-    this.container.querySelector('#btnSendMonitored')?.addEventListener('click', () => {
+    this.container.querySelector('#btnSendMonitored')?.addEventListener('click', (e) => {
+      pulseBtn(e.currentTarget);
       this.topology?.sendSimulatedPacket('Monitored');
       this.setLatencyReadout(0.85);
     });
-    this.container.querySelector('#btnSendThrottled')?.addEventListener('click', () => {
+    this.container.querySelector('#btnSendThrottled')?.addEventListener('click', (e) => {
+      pulseBtn(e.currentTarget);
       this.topology?.sendSimulatedPacket('Throttled');
       this.setLatencyReadout(0.04);
     });
-    this.container.querySelector('#btnSendBlocked')?.addEventListener('click', () => {
+    this.container.querySelector('#btnSendBlocked')?.addEventListener('click', (e) => {
+      pulseBtn(e.currentTarget);
       this.topology?.sendSimulatedPacket('Blocked');
       this.setLatencyReadout(0.04);
     });
+
+    // Blueprint Enlargement Modal handlers
+    const blueprintModal = this.container.querySelector('#blueprintModal');
+    const blueprintImg = this.container.querySelector('#blueprintModalImg');
+    const blueprintHeading = this.container.querySelector('#blueprintModalHeading');
+    const blueprintHint = this.container.querySelector('#blueprintZoomHint');
+    const blueprintCloseBtn = this.container.querySelector('#blueprintModalClose');
+
+    const openBlueprintModal = (src, title) => {
+      if (!blueprintModal || !blueprintImg) return;
+      blueprintImg.src = src;
+      blueprintImg.classList.remove('zoomed');
+      if (blueprintHeading) blueprintHeading.textContent = title;
+      if (blueprintHint) blueprintHint.textContent = 'Click image to toggle 2x zoom';
+      blueprintModal.classList.add('open');
+    };
+
+    const closeBlueprintModal = () => {
+      if (!blueprintModal || !blueprintImg) return;
+      blueprintModal.classList.remove('open');
+      blueprintImg.classList.remove('zoomed');
+    };
+
+    // Open when clicking any blueprint card
+    this.container.querySelectorAll('.blueprint-card-trigger').forEach(card => {
+      card.addEventListener('click', () => {
+        const src = card.getAttribute('data-src') || card.querySelector('img')?.getAttribute('src');
+        const title = card.getAttribute('data-title') || 'Engineering Blueprint';
+        openBlueprintModal(src, title);
+      });
+    });
+
+    // Toggle 2x zoom on image click
+    blueprintImg?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      blueprintImg.classList.toggle('zoomed');
+      if (blueprintHint) {
+        blueprintHint.textContent = blueprintImg.classList.contains('zoomed')
+          ? 'Click image to reset zoom (1x)'
+          : 'Click image to toggle 2x zoom';
+      }
+    });
+
+    // Close button click
+    blueprintCloseBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeBlueprintModal();
+    });
+
+    // Close when clicking backdrop outside card
+    blueprintModal?.addEventListener('click', (e) => {
+      if (e.target === blueprintModal || e.target.id === 'blueprintViewport') {
+        closeBlueprintModal();
+      }
+    });
+
+    // Escape key closes modal
+    this.blueprintEscHandler = (e) => {
+      if (e.key === 'Escape' && blueprintModal?.classList.contains('open')) {
+        closeBlueprintModal();
+      }
+    };
+    window.addEventListener('keydown', this.blueprintEscHandler);
 
     // Layer visibility toggles
     this.container.querySelector('#btnToggleDataLayer')?.addEventListener('click', (e) => {

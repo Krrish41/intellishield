@@ -326,16 +326,14 @@ class IntelliShieldApp {
       activePage.mount(container);
     });
 
-    router.registerRoute('#/ml', (container) => {
+    router.registerRoute('#/ml', () => {
       cleanupActivePage();
-      activePage = new MlMitigationPage();
-      activePage.mount(container);
+      router.navigate('#/console');
     });
 
-    router.registerRoute('#/mitigation', (container) => {
+    router.registerRoute('#/mitigation', () => {
       cleanupActivePage();
-      activePage = new MlMitigationPage();
-      activePage.mount(container);
+      router.navigate('#/console');
     });
 
     router.registerRoute('#/simulator', () => {

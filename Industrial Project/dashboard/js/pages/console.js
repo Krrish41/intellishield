@@ -292,8 +292,7 @@ export class ConsolePage {
                     data-tooltip-desc="Normal user session with natural inter-arrival jitter, balanced GET payloads, and multi-endpoint navigation. Keeps anomaly score <0.20."
                     data-tooltip-action="Click to inject benign human traffic (5 req/s)"
                     data-tooltip-badge="BENIGN TRAFFIC"
-                    data-tooltip-tier="clean"
-                    data-cursor="Benign">
+                    data-tooltip-tier="clean">
               <span class="chip chip-clean" style="font-size: 0.65rem; padding: 2px 6px;">5 req/s</span>
               Benign Human
             </button>
@@ -303,8 +302,7 @@ export class ConsolePage {
                     data-tooltip-desc="Automated flood script blasting /api/v1/users to exhaust socket threads and saturate backend pools. Flags within 85 ms -> HTTP 429."
                     data-tooltip-action="Click to inject 80 req/s volumetric flood"
                     data-tooltip-badge="ATTACK INJECTION"
-                    data-tooltip-tier="throttled"
-                    data-cursor="Flood">
+                    data-tooltip-tier="throttled">
               <span class="chip chip-throttled" style="font-size: 0.65rem; padding: 2px 6px;">80 req/s</span>
               Volumetric Flood
             </button>
@@ -314,8 +312,7 @@ export class ConsolePage {
                     data-tooltip-desc="Programmatic scraper maintaining low velocity below fixed RPM limits but exhibiting rigid timer variance (σ² ≈ 0). Isolated via feature f_1."
                     data-tooltip-action="Click to inject low-and-slow bot"
                     data-tooltip-badge="ATTACK INJECTION"
-                    data-tooltip-tier="monitored"
-                    data-cursor="Scraper">
+                    data-tooltip-tier="monitored">
               <span class="chip chip-monitored" style="font-size: 0.65rem; padding: 2px 6px;">4 req/s</span>
               Stealth Scraper
             </button>
@@ -325,8 +322,7 @@ export class ConsolePage {
                     data-tooltip-desc="Distributed bot probe injecting credential lists at /api/v1/auth/login, producing high HTTP 401 error ratios and triggering Booster 4 -> HTTP 403."
                     data-tooltip-action="Click to inject credential stuffing attack"
                     data-tooltip-badge="ATTACK INJECTION"
-                    data-tooltip-tier="blocked"
-                    data-cursor="Auth">
+                    data-tooltip-tier="blocked">
               <span class="chip chip-blocked" style="font-size: 0.65rem; padding: 2px 6px;">POST Bursts</span>
               Credential Stuffing
             </button>
@@ -336,8 +332,7 @@ export class ConsolePage {
                     data-tooltip-desc="Surge of 15 human users browsing simultaneously during a product drop. High velocity but natural jitter. Verifies zero false drops (100% 200 OK)."
                     data-tooltip-action="Click to test flash crowd resilience"
                     data-tooltip-badge="FALSE-POSITIVE TEST"
-                    data-tooltip-tier="clean"
-                    data-cursor="Flash">
+                    data-tooltip-tier="clean">
               <span class="chip chip-clean" style="font-size: 0.65rem; padding: 2px 6px;">50 req/s Surge</span>
               Flash Crowd
             </button>
@@ -347,8 +342,7 @@ export class ConsolePage {
                     data-tooltip-desc="Attack traffic terminates. Rolling 5.0-second sliding-window ring buffer flushes stale events, resetting token bucket to Clean parameters."
                     data-tooltip-action="Click to trigger cooldown"
                     data-tooltip-badge="AUTO RESTORATION"
-                    data-tooltip-tier="clean"
-                    data-cursor="Cooldown">
+                    data-tooltip-tier="clean">
               ${Icons.refresh(12)} Cooldown & Restore
             </button>
           </div>

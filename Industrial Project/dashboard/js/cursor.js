@@ -24,7 +24,6 @@ export class CursorEngine {
 
     this.dotEl = null;
     this.ringEl = null;
-    this.labelEl = null;
     this.rAF = null;
 
     if (!this.reduceMotion && this.enabled) {
@@ -74,7 +73,6 @@ export class CursorEngine {
 
     this.dotEl = document.getElementById('cursorDot');
     this.ringEl = document.getElementById('cursorRing');
-    this.labelEl = document.getElementById('cursorLabel');
 
     if (!this.dotEl) {
       this.dotEl = document.createElement('div');
@@ -86,11 +84,6 @@ export class CursorEngine {
       this.ringEl.id = 'cursorRing';
       document.body.appendChild(this.ringEl);
     }
-    if (!this.labelEl) {
-      this.labelEl = document.createElement('div');
-      this.labelEl.id = 'cursorLabel';
-      document.body.appendChild(this.labelEl);
-    }
 
     window.addEventListener('pointermove', (e) => {
       this.mouse.x = e.clientX;
@@ -98,9 +91,6 @@ export class CursorEngine {
 
       if (this.dotEl) {
         this.dotEl.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
-      }
-      if (this.labelEl) {
-        this.labelEl.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(14px, 14px)`;
       }
 
       // Add particle to comet trail
@@ -121,16 +111,9 @@ export class CursorEngine {
 
     // Magnetic pull & hover detection on interactive elements
     document.addEventListener('mouseover', (e) => {
-      const target = e.target.closest('a, button, input, [data-cursor], .clickable, .card');
+      const target = e.target.closest('a, button, input, .clickable, .card');
       if (target) {
         if (this.ringEl) this.ringEl.classList.add('hovering');
-        
-        const cursorLabel = target.getAttribute('data-cursor') || target.getAttribute('data-tooltip-action');
-        if (cursorLabel && this.labelEl) {
-          const displayTxt = cursorLabel.length > 24 ? cursorLabel.slice(0, 22) + '...' : cursorLabel;
-          this.labelEl.textContent = displayTxt;
-          this.labelEl.classList.add('visible');
-        }
 
         if (target.classList.contains('btn') || target.tagName === 'BUTTON') {
           this.activeMagnetic = target;
@@ -139,10 +122,9 @@ export class CursorEngine {
     });
 
     document.addEventListener('mouseout', (e) => {
-      const target = e.target.closest('a, button, input, [data-cursor], .clickable, .card');
+      const target = e.target.closest('a, button, input, .clickable, .card');
       if (target) {
         if (this.ringEl) this.ringEl.classList.remove('hovering');
-        if (this.labelEl) this.labelEl.classList.remove('visible');
         
         if (this.activeMagnetic) {
           this.activeMagnetic.style.transform = '';
@@ -268,7 +250,6 @@ export class CursorEngine {
       document.body.classList.remove('custom-cursor-active');
       if (this.dotEl) this.dotEl.style.display = 'none';
       if (this.ringEl) this.ringEl.style.display = 'none';
-      if (this.labelEl) this.labelEl.style.display = 'none';
       if (this.rAF) cancelAnimationFrame(this.rAF);
     } else {
       document.body.classList.add('custom-cursor-active');
