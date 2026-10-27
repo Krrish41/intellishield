@@ -24,6 +24,7 @@
   --border-medium: rgba(56, 189, 248, 0.22);
   --border-strong: rgba(56, 189, 248, 0.40);
   --border-glow: rgba(0, 240, 255, 0.55);
+  --card-glow-bg: rgba(0, 240, 255, 0.08);
 
   /* --- Brand / Primary Accents (Cyberpunk Cyan & Electric Blue) --- */
   --primary-cyan: #00f0ff;
@@ -128,6 +129,7 @@
   --border-medium: rgba(15, 23, 42, 0.16);
   --border-strong: rgba(2, 132, 199, 0.35);
   --border-glow: rgba(2, 132, 199, 0.45);
+  --card-glow-bg: rgba(2, 132, 199, 0.05);
 
   /* --- Brand / Primary Accents (High Contrast Cyan/Blue) --- */
   --primary-cyan: #0284c7;

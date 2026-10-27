@@ -23,6 +23,11 @@
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 240, 255, 0.08);
 }
 
+[data-theme="light"] .glass-panel:hover {
+  border-color: rgba(2, 132, 199, 0.32);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.10), 0 0 20px rgba(2, 132, 199, 0.08);
+}
+
 /* 3D Tilt Cards & Glow Tracking */
 .tilt {
   transform-style: preserve-3d;
@@ -38,7 +43,7 @@
   content: '';
   position: absolute;
   inset: -1px;
-  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), var(--border-glow), transparent 65%);
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), var(--card-glow-bg, rgba(0, 240, 255, 0.08)), transparent 65%);
   opacity: 0;
   transition: opacity 0.25s ease;
   pointer-events: none;
@@ -49,6 +54,11 @@
 .glow-track.active::before,
 .glow-track:hover::before {
   opacity: 1;
+}
+
+.glow-track > * {
+  position: relative;
+  z-index: 2;
 }
 
 .tilt-child {

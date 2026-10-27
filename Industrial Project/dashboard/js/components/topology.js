@@ -39,8 +39,11 @@ export class TopologyCanvas {
     this.statusBanner = {
       text: 'SYSTEM READY: Select a packet type above to simulate wire-speed request routing',
       tier: 'clean',
-      expiry: Date.now() + 10000
+      expiry: Date.now() + 60000
     };
+
+    // Simulation Speed Multiplier (defaults to 0.5x for clear, readable inspection)
+    this.speedMultiplier = 0.5;
 
     // Animated dash offset for traveling telemetry flow
     this.animOffset = 0;
@@ -51,12 +54,37 @@ export class TopologyCanvas {
     this.init();
   }
 
+  setSpeedMultiplier(speed) {
+    this.speedMultiplier = Math.max(0.1, Math.min(2.0, parseFloat(speed) || 0.5));
+    const label = this.speedMultiplier === 1.0 
+      ? '1.0x (Wire Speed)' 
+      : (this.speedMultiplier === 0.25 ? '0.25x (Cinematic Slow-Mo)' : '0.5x (Inspection Pace)');
+    this.updateStatusBanner(`SIMULATION SPEED: ${label}`, 'clean', 3500);
+  }
+
+  updateStatusBanner(text, tier = 'clean', durationMs = 5000) {
+    this.statusBanner = {
+      text,
+      tier: tier.toLowerCase(),
+      expiry: Date.now() + durationMs
+    };
+  }
+
   init() {
     this.resize();
-    window.addEventListener('resize', () => {
+    this._resizeHandler = () => {
       this.resize();
       this.buildTopology();
-    });
+    };
+    window.addEventListener('resize', this._resizeHandler);
+
+    if (typeof ResizeObserver !== 'undefined' && this.canvas && this.canvas.parentElement) {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.resize();
+        this.buildTopology();
+      });
+      this.resizeObserver.observe(this.canvas.parentElement);
+    }
 
     this.buildTopology();
     this.setupInteractions();
@@ -80,11 +108,11 @@ export class TopologyCanvas {
       // Mobile vertical stacked layout
       const cx = w / 2;
       this.nodes = [
-        { id: 'client', label: 'Client (Consumer)', sub: 'HTTP / API Consumer', badge: 'Client', x: cx, y: h * 0.10, w: 220, h: 60, type: 'endpoint', color: 'var(--primary-cyan)', port: 'Ephemeral', file: 'simulator/live_demo.py', desc: 'Sends incoming HTTP traffic (benign browsing or attack bursts).' },
-        { id: 'proxy', label: 'IntelliShield Proxy', sub: 'Axum / Tokio Core (:8080)', badge: ':8080', x: cx, y: h * 0.32, w: 240, h: 68, type: 'core', color: 'var(--primary-cyan)', port: '8080', file: 'core/src/main.rs, proxy.rs', desc: 'Atomic token check, sub-millisecond fast-forwarding, non-blocking telemetry emitter.' },
-        { id: 'backend', label: 'Protected Backend', sub: 'Mock REST Service (:3000)', badge: ':3000', x: cx, y: h * 0.54, w: 230, h: 64, type: 'backend', color: 'var(--tier-clean)', port: '3000', file: 'mock_backend/server.py', desc: 'Protected microservice REST API (/users, /products, /auth/login).' },
-        { id: 'telemetry', label: 'Sliding-Window Engine', sub: 'Rolling 5.0s Buffer', badge: '8D Vector', x: cx, y: h * 0.74, w: 230, h: 64, type: 'telemetry', color: 'var(--primary-indigo)', port: 'In-Memory', file: 'core/src/telemetry.rs', desc: 'Calculates 8-dimensional behavioral vector per active IP every 1000 ms.' },
-        { id: 'ml', label: 'ML Anomaly Worker', sub: 'Isolation Forest (:5001)', badge: ':5001', x: cx, y: h * 0.92, w: 230, h: 64, type: 'ml', color: 'var(--primary-indigo)', port: '5001', file: 'ml_engine/ml_worker_server.py', desc: 'Unsupervised Isolation Forest anomaly scoring batch endpoint (/score_batch).' }
+        { id: 'client', label: 'Client (Consumer)', sub: 'HTTP / API Consumer', badge: 'INGRESS', x: cx, y: h * 0.10, w: 220, h: 62, type: 'endpoint', color: '#00f0ff', lightColor: '#0284c7', port: 'Ephemeral', file: 'simulator/live_demo.py', desc: 'Sends incoming HTTP traffic (benign browsing or attack bursts).' },
+        { id: 'proxy', label: 'IntelliShield Proxy', sub: 'Axum / Tokio Core (:8080)', badge: ':8080 GATEWAY', x: cx, y: h * 0.32, w: 240, h: 68, type: 'core', color: '#00f0ff', lightColor: '#0284c7', port: '8080', file: 'core/src/main.rs, proxy.rs', desc: 'Atomic token check, sub-millisecond fast-forwarding, non-blocking telemetry emitter.' },
+        { id: 'backend', label: 'Protected Backend', sub: 'Mock REST Service (:3000)', badge: ':3000 ORIGIN', x: cx, y: h * 0.54, w: 230, h: 64, type: 'backend', color: '#10b981', lightColor: '#059669', port: '3000', file: 'mock_backend/server.py', desc: 'Protected microservice REST API (/users, /products, /auth/login).' },
+        { id: 'telemetry', label: 'Sliding-Window Engine', sub: 'Rolling 5.0s Buffer', badge: '8D BUFFER', x: cx, y: h * 0.74, w: 230, h: 64, type: 'telemetry', color: '#818cf8', lightColor: '#4f46e5', port: 'In-Memory', file: 'core/src/telemetry.rs', desc: 'Calculates 8-dimensional behavioral vector per active IP every 1000 ms.' },
+        { id: 'ml', label: 'ML Anomaly Worker', sub: 'Isolation Forest (:5001)', badge: ':5001 THREAT-ML', x: cx, y: h * 0.92, w: 230, h: 64, type: 'ml', color: '#06b6d4', lightColor: '#0891b2', port: '5001', file: 'ml_engine/ml_worker_server.py', desc: 'Unsupervised Isolation Forest anomaly scoring batch endpoint (/score_batch).' }
       ];
     } else {
       // Desktop horizontal dual-path layout with generous card boxes
@@ -99,13 +127,14 @@ export class TopologyCanvas {
           id: 'client', 
           label: 'Client (Consumer)', 
           sub: 'HTTP / API Request Source', 
-          badge: 'Ingress',
+          badge: 'INGRESS',
           x: leftX, 
           y: upperY, 
           w: 200, 
           h: 72, 
           type: 'endpoint', 
-          color: 'var(--primary-cyan)', 
+          color: '#00f0ff', 
+          lightColor: '#0284c7',
           port: 'Ephemeral', 
           file: 'simulator/live_demo.py', 
           desc: 'Originates HTTP API requests across Clean, Monitored, Throttled, or Blocked tiers.' 
@@ -120,7 +149,8 @@ export class TopologyCanvas {
           w: 245, 
           h: 82, 
           type: 'core', 
-          color: 'var(--primary-cyan)', 
+          color: '#00f0ff', 
+          lightColor: '#0284c7',
           port: '8080', 
           file: 'core/src/main.rs, proxy.rs, mitigation.rs', 
           desc: 'Atomic in-memory token check (<0.05 ms), fast-path zero-copy forwarding, non-blocking telemetry queuing.' 
@@ -135,7 +165,8 @@ export class TopologyCanvas {
           w: 220, 
           h: 72, 
           type: 'backend', 
-          color: 'var(--tier-clean)', 
+          color: '#10b981', 
+          lightColor: '#059669',
           port: '3000', 
           file: 'mock_backend/server.py', 
           desc: 'Protected upstream web service serving /api/v1/users, /products, and /auth/login.' 
@@ -144,13 +175,14 @@ export class TopologyCanvas {
           id: 'telemetry', 
           label: 'Sliding-Window Engine', 
           sub: 'Rolling 5.0s Buffer (Lock-Free)', 
-          badge: '8D VECTORS',
+          badge: '8D BUFFER',
           x: proxyX, 
           y: lowerY, 
           w: 240, 
           h: 74, 
           type: 'telemetry', 
-          color: 'var(--primary-indigo)', 
+          color: '#818cf8', 
+          lightColor: '#4f46e5',
           port: 'In-Memory', 
           file: 'core/src/telemetry.rs', 
           desc: 'Aggregates metadata into sliding window, extracts 8-dimensional feature vector every 1000 ms.' 
@@ -165,7 +197,8 @@ export class TopologyCanvas {
           w: 230, 
           h: 74, 
           type: 'ml', 
-          color: 'var(--tier-monitored)', 
+          color: '#06b6d4', 
+          lightColor: '#0891b2',
           port: '5001', 
           file: 'ml_engine/ml_worker_server.py', 
           desc: 'Evaluates 8D feature vectors asynchronously via Unsupervised Isolation Forest, returns scores [0.0, 1.0].' 
@@ -213,7 +246,7 @@ export class TopologyCanvas {
           y: this.hoveredNode.y,
           radius: 15 * this.dpr,
           maxRadius: 60 * this.dpr,
-          color: 'var(--primary-cyan)',
+          color: '#00f0ff',
           alpha: 1.0
         });
         window.dispatchEvent(new CustomEvent('topology-node-selected', { detail: { node: this.hoveredNode } }));
@@ -226,6 +259,10 @@ export class TopologyCanvas {
    * and distinct fast-path or drop feedback.
    */
   sendSimulatedPacket(tier = 'Clean') {
+    if (!this.nodes || this.nodes.length === 0) {
+      this.buildTopology();
+    }
+
     const clientNode = this.nodes.find(n => n.id === 'client');
     const proxyNode = this.nodes.find(n => n.id === 'proxy');
     const backendNode = this.nodes.find(n => n.id === 'backend');
@@ -255,7 +292,7 @@ export class TopologyCanvas {
     this.statusBanner = {
       text: bannerMsg,
       tier: tier.toLowerCase(),
-      expiry: Date.now() + 6000
+      expiry: Date.now() + 6500
     };
 
     // Client shockwave burst
@@ -268,9 +305,9 @@ export class TopologyCanvas {
       alpha: 1.0
     });
 
-    // Stagger 3 prominent packets for a visible stream effect
+    // Stagger 3 prominent packets for a visible stream effect scaled by speed
     for (let wave = 0; wave < 3; wave++) {
-      const delayMs = wave * 140;
+      const delayMs = (wave * 150) / Math.max(0.1, this.speedMultiplier);
       setTimeout(() => {
         if (!this.running) return;
 
@@ -469,7 +506,11 @@ export class TopologyCanvas {
       if (!this.running) return;
       const dt = Math.min((t - last) / 16.7, 3);
       last = t;
-      this.render(dt);
+      try {
+        this.render(dt);
+      } catch (err) {
+        console.error('Topology render loop error:', err);
+      }
       this.rAF = requestAnimationFrame(loop);
     };
     this.rAF = requestAnimationFrame(loop);
@@ -478,6 +519,14 @@ export class TopologyCanvas {
   stop() {
     this.running = false;
     if (this.rAF) cancelAnimationFrame(this.rAF);
+    if (this._resizeHandler) {
+      window.removeEventListener('resize', this._resizeHandler);
+      this._resizeHandler = null;
+    }
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
   }
 
   render(dt) {
@@ -559,8 +608,8 @@ export class TopologyCanvas {
     // 2. Update and Draw Expanding Shockwaves
     for (let i = this.shockwaves.length - 1; i >= 0; i--) {
       const sw = this.shockwaves[i];
-      sw.radius += 2.2 * dpr * dt;
-      sw.alpha -= 0.035 * dt;
+      sw.radius += 2.2 * dpr * dt * this.speedMultiplier;
+      sw.alpha -= 0.035 * dt * this.speedMultiplier;
 
       if (sw.alpha <= 0 || sw.radius >= sw.maxRadius) {
         this.shockwaves.splice(i, 1);
@@ -580,7 +629,7 @@ export class TopologyCanvas {
     // 3. Update and Draw Traveling Packets with Tails & Badges
     for (let i = this.packets.length - 1; i >= 0; i--) {
       const p = this.packets[i];
-      p.progress += p.speed * dt;
+      p.progress += p.speed * this.speedMultiplier * dt;
 
       let curX, curY;
       if (p.isCurved) {
@@ -683,8 +732,8 @@ export class TopologyCanvas {
       ctx.fill();
 
       ctx.strokeStyle = isHighlighted 
-        ? 'var(--primary-cyan)' 
-        : (isHovered ? 'var(--border-strong)' : (colors.isLight ? '#cbd5e1' : 'rgba(255, 255, 255, 0.12)'));
+        ? (colors.isLight ? '#0284c7' : '#00f0ff') 
+        : (isHovered ? (colors.isLight ? '#38bdf8' : 'rgba(56, 189, 248, 0.4)') : (colors.isLight ? '#cbd5e1' : 'rgba(255, 255, 255, 0.12)'));
       ctx.lineWidth = (isHighlighted ? 2.5 : (isHovered ? 2 : 1.2)) * dpr;
       ctx.stroke();
 

@@ -30,6 +30,10 @@ export class ArchitecturePage {
       this.topology.stop();
       this.topology = null;
     }
+    if (this._nodeSelectHandler) {
+      window.removeEventListener('topology-node-selected', this._nodeSelectHandler);
+      this._nodeSelectHandler = null;
+    }
     if (this.stepperInterval) {
       clearInterval(this.stepperInterval);
     }
@@ -49,23 +53,29 @@ export class ArchitecturePage {
             <p>Decoupling wire-speed network forwarding (Rust Axum) from asynchronous machine learning threat scoring.</p>
           </div>
           <div class="page-actions">
-            <button class="btn btn-secondary btn-sm" id="btnToggleDataLayer"
+            <button class="topo-layer-toggle active" id="btnToggleDataLayer"
                     data-tooltip-title="Toggle Fast Forwarding Data Path"
                     data-tooltip-desc="Highlights zero-copy packet flow from Client through Ingress Gateway to Upstream Origin."
                     data-tooltip-action="Click to toggle data path highlight">
-              ${Icons.activity(14)} Data Path
+              <span class="topo-layer-dot dot-data"></span>
+              ${Icons.activity(14)}
+              <span>Data Path</span>
             </button>
-            <button class="btn btn-secondary btn-sm" id="btnToggleTelemetryLayer"
+            <button class="topo-layer-toggle active" id="btnToggleTelemetryLayer"
                     data-tooltip-title="Toggle Asynchronous Telemetry Queue"
                     data-tooltip-desc="Highlights sliding-window event ring buffer extracting 8D behavioral telemetry vectors."
                     data-tooltip-action="Click to toggle telemetry queue highlight">
-              ${Icons.terminal(14)} Telemetry Queue
+              <span class="topo-layer-dot dot-telemetry"></span>
+              ${Icons.terminal(14)}
+              <span>Telemetry Queue</span>
             </button>
-            <button class="btn btn-secondary btn-sm" id="btnToggleControlLayer"
+            <button class="topo-layer-toggle active" id="btnToggleControlLayer"
                     data-tooltip-title="Toggle Dynamic Score Feedback Loop"
                     data-tooltip-desc="Highlights background threat score feedback adjusting client token bucket capacity and refill rate."
                     data-tooltip-action="Click to toggle control loop highlight">
-              ${Icons.zap(14)} Score Feedback
+              <span class="topo-layer-dot dot-control"></span>
+              ${Icons.zap(14)}
+              <span>Score Feedback</span>
             </button>
           </div>
         </div>
@@ -74,48 +84,72 @@ export class ArchitecturePage {
         <div class="topology-wrapper reveal delay1">
           <!-- Live Interactive Control Bar -->
           <div class="topology-controls-bar">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                Send Request:
+            <!-- Simulated Request Packet Launchers -->
+            <div class="topo-sim-section">
+              <span class="topo-sim-label">
+                <span class="topo-sim-pulse"></span>
+                <span>Send Request:</span>
               </span>
-              <button class="btn btn-secondary btn-sm" id="btnSendClean" style="color: var(--tier-clean);"
-                      data-tooltip-title="Send Clean Packet (200 OK)"
-                      data-tooltip-desc="Simulates legitimate user request. Forwarded directly via sub-millisecond fast-path (0.82ms latency)."
-                      data-tooltip-action="Click to simulate clean packet traversal"
-                      data-tooltip-badge="PACKET PROBE"
-                      data-tooltip-tier="clean">
-                ${Icons.play(12)} Clean (200)
-              </button>
-              <button class="btn btn-secondary btn-sm" id="btnSendMonitored" style="color: var(--tier-monitored);"
-                      data-tooltip-title="Send Monitored Packet (200 OK)"
-                      data-tooltip-desc="Simulates client with borderline anomaly score (0.55). Forwarded with zero latency penalty while background inference runs."
-                      data-tooltip-action="Click to simulate monitored packet traversal"
-                      data-tooltip-badge="PACKET PROBE"
-                      data-tooltip-tier="monitored">
-                ${Icons.play(12)} Monitored (200)
-              </button>
-              <button class="btn btn-secondary btn-sm" id="btnSendThrottled" style="color: var(--tier-throttled);"
-                      data-tooltip-title="Send Throttled Packet (429 Too Many Requests)"
-                      data-tooltip-desc="Simulates burst client with exhausted token bucket. Intercepted in fast-path (0.04ms) without hitting origin backend."
-                      data-tooltip-action="Click to simulate token bucket throttle rejection"
-                      data-tooltip-badge="PACKET PROBE"
-                      data-tooltip-tier="throttled">
-                ${Icons.play(12)} Throttled (429)
-              </button>
-              <button class="btn btn-secondary btn-sm" id="btnSendBlocked" style="color: var(--tier-blocked);"
-                      data-tooltip-title="Send Malicious Blocked Packet (403 Forbidden)"
-                      data-tooltip-desc="Simulates isolated attacker IP (score > 0.85). Immediate edge rejection in 0.04ms with zero memory allocation."
-                      data-tooltip-action="Click to simulate edge threat drop"
-                      data-tooltip-badge="PACKET PROBE"
-                      data-tooltip-tier="blocked">
-                ${Icons.play(12)} Blocked (403)
-              </button>
+              <div class="topo-sim-btns">
+                <button class="topo-sim-btn topo-sim-btn-clean" id="btnSendClean"
+                        data-tooltip-title="Send Clean Packet (200 OK)"
+                        data-tooltip-desc="Simulates legitimate user request. Forwarded directly via sub-millisecond fast-path (0.82ms latency)."
+                        data-tooltip-action="Click to simulate clean packet traversal"
+                        data-tooltip-badge="PACKET PROBE"
+                        data-tooltip-tier="clean">
+                  <span class="topo-btn-icon">${Icons.play(13)}</span>
+                  <span class="topo-btn-name">Clean</span>
+                  <span class="topo-btn-badge">200 OK</span>
+                </button>
+                <button class="topo-sim-btn topo-sim-btn-monitored" id="btnSendMonitored"
+                        data-tooltip-title="Send Monitored Packet (200 OK)"
+                        data-tooltip-desc="Simulates client with borderline anomaly score (0.55). Forwarded with zero latency penalty while background inference runs."
+                        data-tooltip-action="Click to simulate monitored packet traversal"
+                        data-tooltip-badge="PACKET PROBE"
+                        data-tooltip-tier="monitored">
+                  <span class="topo-btn-icon">${Icons.play(13)}</span>
+                  <span class="topo-btn-name">Monitored</span>
+                  <span class="topo-btn-badge">200 MON</span>
+                </button>
+                <button class="topo-sim-btn topo-sim-btn-throttled" id="btnSendThrottled"
+                        data-tooltip-title="Send Throttled Packet (429 Too Many Requests)"
+                        data-tooltip-desc="Simulates burst client with exhausted token bucket. Intercepted in fast-path (0.04ms) without hitting origin backend."
+                        data-tooltip-action="Click to simulate token bucket throttle rejection"
+                        data-tooltip-badge="PACKET PROBE"
+                        data-tooltip-tier="throttled">
+                  <span class="topo-btn-icon">${Icons.play(13)}</span>
+                  <span class="topo-btn-name">Throttled</span>
+                  <span class="topo-btn-badge">429 RATE</span>
+                </button>
+                <button class="topo-sim-btn topo-sim-btn-blocked" id="btnSendBlocked"
+                        data-tooltip-title="Send Malicious Blocked Packet (403 Forbidden)"
+                        data-tooltip-desc="Simulates isolated attacker IP (score > 0.85). Immediate edge rejection in 0.04ms with zero memory allocation."
+                        data-tooltip-action="Click to simulate edge threat drop"
+                        data-tooltip-badge="PACKET PROBE"
+                        data-tooltip-tier="blocked">
+                  <span class="topo-btn-icon">${Icons.play(13)}</span>
+                  <span class="topo-btn-name">Blocked</span>
+                  <span class="topo-btn-badge">403 DROP</span>
+                </button>
+              </div>
             </div>
 
-            <!-- Latency Counter Readout -->
-            <div style="display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.85rem;">
-              <span style="color: var(--text-muted);">Simulated Latency:</span>
-              <strong id="simLatencyReadout" style="color: var(--primary-cyan);">0.85 ms</strong>
+            <!-- Simulation Speed Selector & Latency Readout -->
+            <div class="topo-meta-section">
+              <div class="topo-speed-control">
+                <span class="topo-speed-label">Speed:</span>
+                <div class="topo-speed-pills" id="topoSpeedPills">
+                  <button class="topo-speed-pill" data-speed="1.0" title="Normal Wire Speed">1.0x</button>
+                  <button class="topo-speed-pill active" data-speed="0.5" title="Slow for Inspection">0.5x Slow</button>
+                  <button class="topo-speed-pill" data-speed="0.25" title="Cinematic Slow Motion">0.25x Slow-Mo</button>
+                </div>
+              </div>
+
+              <!-- Latency Counter Readout -->
+              <div class="topo-latency-box">
+                <span class="topo-latency-label">Latency:</span>
+                <strong id="simLatencyReadout" class="topo-latency-val">0.85 ms</strong>
+              </div>
             </div>
           </div>
 
@@ -258,8 +292,8 @@ export class ArchitecturePage {
               
               <div style="padding-left: 16px; border-left: 1px solid var(--border-medium); margin-left: 6px; display: flex; flex-direction: column; gap: 8px;">
                 <div>
-                  <strong style="color: #f1f5f9;">run_intellishield.py</strong>
-                  <span style="color: var(--text-muted);"> &mdash; Unified launcher (--start for daemon, --demo for live simulation)</span>
+                  <strong class="code-tree-file">run_intellishield.py</strong>
+                  <span class="code-tree-desc"> &mdash; Unified launcher (--start for daemon, --demo for live simulation)</span>
                 </div>
 
                 <div>
@@ -290,14 +324,14 @@ export class ArchitecturePage {
                 </div>
 
                 <div>
-                  <strong style="color: #f59e0b);">mock_backend/</strong> (Protected Upstream)
+                  <strong class="code-tree-dir-backend">mock_backend/</strong> (Protected Upstream)
                   <div style="padding-left: 16px; margin-top: 4px; display: flex; flex-direction: column; gap: 4px; color: var(--text-secondary);">
                     <div>&bull; <strong>server.py</strong> &mdash; Protected REST API on port 3000 (/users, /products, /auth/login)</div>
                   </div>
                 </div>
 
                 <div>
-                  <strong style="color: #cbd5e1);">simulator/</strong> (Attack Simulation Suite)
+                  <strong class="code-tree-dir-simulator">simulator/</strong> (Attack Simulation Suite)
                   <div style="padding-left: 16px; margin-top: 4px; display: flex; flex-direction: column; gap: 4px; color: var(--text-secondary);">
                     <div>&bull; <strong>live_demo.py</strong> &mdash; Automated 4-phase attack validation demo</div>
                     <div>&bull; <strong>traffic_generator.py</strong> &mdash; Benign, flood, scraping, credential stuffing generators</div>
@@ -347,44 +381,101 @@ export class ArchitecturePage {
   }
 
   initTopology() {
-    this.topology = new TopologyCanvas('topologyCanvas');
-    window.addEventListener('topology-node-selected', (e) => {
+    const canvas = this.container.querySelector('#topologyCanvas');
+    if (!canvas) return;
+    this.topology = new TopologyCanvas(canvas);
+    this._nodeSelectHandler = (e) => {
       this.openNodeDrawer(e.detail.node);
-    });
+    };
+    window.addEventListener('topology-node-selected', this._nodeSelectHandler);
   }
 
   attachEvents() {
-    // Helper to pulse button on click for tactile confirmation
-    const pulseBtn = (btn) => {
+    // Helper to give instant visual tactile feedback
+    const triggerBtnFeedback = (btn) => {
       if (!btn) return;
-      btn.style.transform = 'scale(0.95)';
-      btn.style.boxShadow = '0 0 16px rgba(0, 240, 255, 0.4)';
+      btn.classList.add('btn-pressed');
       setTimeout(() => {
-        btn.style.transform = '';
-        btn.style.boxShadow = '';
-      }, 250);
+        btn.classList.remove('btn-pressed');
+      }, 220);
+    };
+
+    // Speed control selector (1.0x, 0.5x, 0.25x)
+    const speedPills = this.container.querySelectorAll('.topo-speed-pill');
+    speedPills.forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        speedPills.forEach(p => p.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        const speed = parseFloat(e.currentTarget.getAttribute('data-speed')) || 0.5;
+        this.topology?.setSpeedMultiplier(speed);
+      });
+    });
+
+    const updateSimulationNarrative = (stepNum, title, text, chipClass = 'chip-clean') => {
+      const stepNumEl = this.container.querySelector('#stepperStepNumber');
+      const stepTitleEl = this.container.querySelector('#stepperStepTitle');
+      const stepNarrativeEl = this.container.querySelector('#stepperStepNarrative');
+      if (stepNumEl) {
+        stepNumEl.textContent = stepNum;
+        stepNumEl.className = `chip ${chipClass}`;
+      }
+      if (stepTitleEl) stepTitleEl.textContent = title;
+      if (stepNarrativeEl) stepNarrativeEl.textContent = text;
+    };
+
+    const handleSend = (btn, tier, latency, stepNum, title, text, chipClass = 'chip-clean') => {
+      triggerBtnFeedback(btn);
+      if (!this.topology) {
+        const canvas = this.container.querySelector('#topologyCanvas');
+        if (canvas) this.topology = new TopologyCanvas(canvas);
+      }
+      this.topology?.sendSimulatedPacket(tier);
+      this.setLatencyReadout(latency);
+      updateSimulationNarrative(stepNum, title, text, chipClass);
     };
 
     // Simulated request buttons with prominent packet dispatch
     this.container.querySelector('#btnSendClean')?.addEventListener('click', (e) => {
-      pulseBtn(e.currentTarget);
-      this.topology?.sendSimulatedPacket('Clean');
-      this.setLatencyReadout(0.82);
+      handleSend(
+        e.currentTarget,
+        'Clean',
+        0.82,
+        'FAST-PATH 200 OK',
+        'Clean Request Wire-Speed Forwarding',
+        'Legitimate HTTP request evaluated by token bucket in 0.04 ms. Forwarded zero-copy to origin backend on port 3000 with sub-millisecond roundtrip (0.82 ms).'
+      );
     });
     this.container.querySelector('#btnSendMonitored')?.addEventListener('click', (e) => {
-      pulseBtn(e.currentTarget);
-      this.topology?.sendSimulatedPacket('Monitored');
-      this.setLatencyReadout(0.85);
+      handleSend(
+        e.currentTarget,
+        'Monitored',
+        0.85,
+        'MONITORED 200 OK',
+        'Zero-Latency Forward + Async 8D Telemetry Vector',
+        'Borderline session (anomaly score 0.55). The fast-path forwards immediately to upstream while the lock-free queue emits 8D behavioral telemetry to ML Worker port 5001.'
+      );
     });
     this.container.querySelector('#btnSendThrottled')?.addEventListener('click', (e) => {
-      pulseBtn(e.currentTarget);
-      this.topology?.sendSimulatedPacket('Throttled');
-      this.setLatencyReadout(0.04);
+      handleSend(
+        e.currentTarget,
+        'Throttled',
+        0.04,
+        'THROTTLED 429',
+        'Token Bucket Depletion & Rate Throttling',
+        'Burst request velocity exceeds burst allowance. The edge proxy dynamic token bucket rejects the packet in 0.04 ms with HTTP 429 Too Many Requests, isolating backend origin.',
+        'chip-throttled'
+      );
     });
     this.container.querySelector('#btnSendBlocked')?.addEventListener('click', (e) => {
-      pulseBtn(e.currentTarget);
-      this.topology?.sendSimulatedPacket('Blocked');
-      this.setLatencyReadout(0.04);
+      handleSend(
+        e.currentTarget,
+        'Blocked',
+        0.04,
+        'BLOCKED 403',
+        'Edge Threat Interception & IP Isolation',
+        'ML Anomaly Worker identified threat score > 0.85 (Credential Stuffing). Incoming packet dropped at the reverse proxy gateway in 0.04 ms with HTTP 403 Forbidden with zero backend overhead.',
+        'chip-blocked'
+      );
     });
 
     // Blueprint Enlargement Modal handlers
@@ -454,17 +545,29 @@ export class ArchitecturePage {
     this.container.querySelector('#btnToggleDataLayer')?.addEventListener('click', (e) => {
       if (!this.topology) return;
       this.topology.showDataPath = !this.topology.showDataPath;
-      e.currentTarget.classList.toggle('btn-primary', this.topology.showDataPath);
+      e.currentTarget.classList.toggle('active', this.topology.showDataPath);
+      this.topology.updateStatusBanner?.(
+        `DATA PATH LAYER: ${this.topology.showDataPath ? 'ENABLED (Fast-Path Active)' : 'MUTED'}`,
+        'clean'
+      );
     });
     this.container.querySelector('#btnToggleTelemetryLayer')?.addEventListener('click', (e) => {
       if (!this.topology) return;
       this.topology.showTelemetryPath = !this.topology.showTelemetryPath;
-      e.currentTarget.classList.toggle('btn-primary', this.topology.showTelemetryPath);
+      e.currentTarget.classList.toggle('active', this.topology.showTelemetryPath);
+      this.topology.updateStatusBanner?.(
+        `TELEMETRY QUEUE: ${this.topology.showTelemetryPath ? 'ENABLED (8D Buffer Active)' : 'MUTED'}`,
+        'clean'
+      );
     });
     this.container.querySelector('#btnToggleControlLayer')?.addEventListener('click', (e) => {
       if (!this.topology) return;
       this.topology.showControlPath = !this.topology.showControlPath;
-      e.currentTarget.classList.toggle('btn-primary', this.topology.showControlPath);
+      e.currentTarget.classList.toggle('active', this.topology.showControlPath);
+      this.topology.updateStatusBanner?.(
+        `SCORE FEEDBACK LOOP: ${this.topology.showControlPath ? 'ENABLED (Dynamic Rate Limiting Active)' : 'MUTED'}`,
+        'clean'
+      );
     });
 
     // Lifecycle Stepper controls
