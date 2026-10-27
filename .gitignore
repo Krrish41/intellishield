@@ -48,7 +48,11 @@ desktop.ini
 */.gemini/
 scratch/
 */scratch/
+scratch_edge_profile/
 qa/
+screenshots/
+capture_site.js
+build_presentation.py
 PROJECT_INFO.md
 GEMINI.md
 */GEMINI.md
@@ -76,6 +80,7 @@ PROJECT---I.pdf
 Review 1*
 TimeLine.xlsx
 IntelliShield_Review2_Master_Executive_Handbook.pdf
+IntelliShield_Best_Project_Video_Presentation.*
 Industrial Project/presentations/
 Industrial Project/reports/
 Industrial Project/scripts/
