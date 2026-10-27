@@ -8,6 +8,8 @@
 [![Rust Core](https://img.shields.io/badge/Rust-Edition%202021-orange.svg?style=flat-square)](https://www.rust-lang.org/)
 [![Docker Ready](https://img.shields.io/badge/Docker-Supported-2496ED.svg?style=flat-square)](https://www.docker.com/)
 
+> **Live Interactive Dashboard:** [https://krrish41.github.io/intellishield/](https://krrish41.github.io/intellishield/)
+
 ---
 
 ## Overview
