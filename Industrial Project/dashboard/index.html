@@ -73,6 +73,13 @@
       var pl = document.getElementById('preload');
       if (pl) pl.classList.add('done');
     }
+    // Hard fallback: guarantees preloader dismisses even if background scripts delay
+    setTimeout(function() {
+      var pl = document.getElementById('preload');
+      if (pl && !pl.classList.contains('done')) {
+        pl.classList.add('done');
+      }
+    }, 1200);
   </script>
 
   <div id="root">

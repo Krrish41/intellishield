@@ -159,20 +159,19 @@ export class ArchitecturePage {
             <!-- System Architecture Diagram Card -->
             <div class="glass-panel arch-img-card blueprint-card-trigger" 
                  data-src="./assets/system_architecture.png" 
-                 data-title="Fig. 1: End-to-End System Architecture (Wire-Speed Fast-Path)"
-                 style="padding: 16px; overflow: hidden; background: rgba(5, 8, 17, 0.6); cursor: pointer;">
+                 data-title="Fig. 1: End-to-End System Architecture (Wire-Speed Fast-Path)">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <strong style="font-size: 0.9rem; color: var(--primary-cyan);">Fig. 1: End-to-End System Architecture</strong>
                 <span class="badge badge-clean">Click to Enlarge &amp; Zoom</span>
               </div>
-              <div class="arch-img-wrapper" style="overflow: hidden; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); position: relative;">
+              <div class="arch-img-wrapper">
                 <img src="./assets/system_architecture.png" alt="IntelliShield End-to-End System Architecture" 
                      class="img-zoomable" style="width: 100%; height: auto; display: block; object-fit: contain;">
-                <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(5, 8, 17, 0.85); backdrop-filter: blur(8px); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-glow); font-size: 0.72rem; color: var(--primary-cyan); font-family: var(--font-mono); pointer-events: none;">
-                  🔍 Click to Enlarge
+                <div class="arch-enlarge-badge">
+                  ${Icons.search(12)} Click to Enlarge
                 </div>
               </div>
-              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4;">
+              <p class="arch-card-desc">
                 Decoupled ingress proxy (Rust Tokio, Axum) forwarding zero-copy byte buffers to backend on port 3000, emitting lock-free telemetry to port 5001.
               </p>
             </div>
@@ -180,20 +179,19 @@ export class ArchitecturePage {
             <!-- Data Flow Diagram Card -->
             <div class="glass-panel arch-img-card blueprint-card-trigger" 
                  data-src="./assets/data_flow_diagram.png" 
-                 data-title="Fig. 2: Telemetry &amp; Mitigation Data Flow (Sliding-Window 5.0s Pipeline)"
-                 style="padding: 16px; overflow: hidden; background: rgba(5, 8, 17, 0.6); cursor: pointer;">
+                 data-title="Fig. 2: Telemetry &amp; Mitigation Data Flow (Sliding-Window 5.0s Pipeline)">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <strong style="font-size: 0.9rem; color: var(--tier-monitored);">Fig. 2: Telemetry &amp; Mitigation Data Flow</strong>
                 <span class="badge badge-monitored">Click to Enlarge &amp; Zoom</span>
               </div>
-              <div class="arch-img-wrapper" style="overflow: hidden; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); position: relative;">
+              <div class="arch-img-wrapper">
                 <img src="./assets/data_flow_diagram.png" alt="IntelliShield Data Flow and Threat Scoring Diagram" 
                      class="img-zoomable" style="width: 100%; height: auto; display: block; object-fit: contain;">
-                <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(5, 8, 17, 0.85); backdrop-filter: blur(8px); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-glow); font-size: 0.72rem; color: var(--tier-monitored); font-family: var(--font-mono); pointer-events: none;">
-                  🔍 Click to Enlarge
+                <div class="arch-enlarge-badge arch-enlarge-badge-monitored">
+                  ${Icons.search(12)} Click to Enlarge
                 </div>
               </div>
-              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4;">
+              <p class="arch-card-desc">
                 Asynchronous feature extraction pipeline converting raw TCP telemetry into 8D behavioral matrices evaluated against tree estimators.
               </p>
             </div>

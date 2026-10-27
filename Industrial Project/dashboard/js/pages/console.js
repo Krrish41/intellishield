@@ -474,21 +474,21 @@ export class ConsolePage {
             </div>
             <div class="terminal-title">INTELLISHIELD FASTPATH AUDIT STREAM</div>
             <div style="display: flex; align-items: center; gap: 8px;">
-              <button class="btn btn-ghost btn-sm" id="btnPauseLogs" style="font-size: 0.75rem; color: #94a3b8;"
+              <button class="btn btn-ghost btn-sm terminal-action-btn" id="btnPauseLogs"
                       data-tooltip-title="Pause Stream"
                       data-tooltip-desc="Freezes terminal event display to inspect individual packet logs without autoscrolling."
                       data-tooltip-action="Click to toggle log autoscroll pause/resume"
                       data-tooltip-badge="LOG CONTROL">
                 ${Icons.pause(12)} Pause
               </button>
-              <button class="btn btn-ghost btn-sm" id="btnExportJson" style="font-size: 0.75rem; color: #94a3b8;"
+              <button class="btn btn-ghost btn-sm terminal-action-btn" id="btnExportJson"
                       data-tooltip-title="Export JSON"
                       data-tooltip-desc="Saves all events in the 150-event ring buffer as a formatted JSON array."
                       data-tooltip-action="Click to download intellishield-events.json"
                       data-tooltip-badge="DATA EXPORT">
                 JSON
               </button>
-              <button class="btn btn-ghost btn-sm" id="btnExportCsv" style="font-size: 0.75rem; color: #94a3b8;"
+              <button class="btn btn-ghost btn-sm terminal-action-btn" id="btnExportCsv"
                       data-tooltip-title="Export CSV"
                       data-tooltip-desc="Exports packet audit rows (time, ip, method, path, status, latency) in spreadsheet CSV format."
                       data-tooltip-action="Click to download intellishield-events.csv"
@@ -1025,10 +1025,10 @@ export class ConsolePage {
         <div class="log-row">
           <span class="log-time">[${this.escape(e.time)}]</span>
           <span class="log-ip">${this.escape(e.ip)}</span>
-          <span style="font-weight: 700;">${this.escape(e.method)}</span>
+          <span class="log-method">${this.escape(e.method)}</span>
           <span class="log-path">${this.escape(e.path)}</span>
           <span class="${statusClass}">${e.status}</span>
-          <span style="color: var(--text-muted); font-size: 0.72rem;">(${e.latency.toFixed(2)} ms)</span>
+          <span class="log-latency">(${e.latency.toFixed(2)} ms)</span>
         </div>
       `;
     }).join('');
