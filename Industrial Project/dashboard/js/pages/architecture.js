@@ -358,26 +358,29 @@ export class ArchitecturePage {
         <div id="blueprintModal" class="blueprint-modal-backdrop" role="dialog" aria-modal="true" aria-label="High-Resolution Blueprint Viewer">
           <div class="blueprint-modal-card">
             <div class="blueprint-modal-header">
-              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <div class="blueprint-header-left">
                 <span class="badge badge-clean">HIGH-RESOLUTION BLUEPRINT</span>
-                <h4 id="blueprintModalHeading" style="margin: 0; font-size: 0.95rem; color: var(--text-primary);"></h4>
+                <h4 id="blueprintModalHeading" class="blueprint-modal-title"></h4>
               </div>
-              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                <span id="blueprintZoomHint" style="font-size: 0.78rem; color: var(--primary-cyan); font-family: var(--font-mono);">
+              <div class="blueprint-header-controls">
+                <span id="blueprintZoomHint" class="blueprint-zoom-hint">
                   Click point to zoom &bull; Drag to pan &bull; Scroll wheel
                 </span>
                 <div class="blueprint-zoom-toolbar">
                   <button type="button" id="blueprintZoomIn" class="btn-zoom-tool" title="Zoom In (+)" aria-label="Zoom In">
-                    ${Icons.plus(15)}
+                    ${Icons.plus(14)}
                   </button>
                   <button type="button" id="blueprintZoomOut" class="btn-zoom-tool" title="Zoom Out (-)" aria-label="Zoom Out">
-                    ${Icons.minus(15)}
+                    ${Icons.minus(14)}
                   </button>
                   <button type="button" id="blueprintZoomReset" class="btn-zoom-tool btn-zoom-reset" title="Reset Zoom (100%)">
                     100%
                   </button>
                 </div>
-                <button id="blueprintModalClose" class="blueprint-modal-close" aria-label="Close modal">&times;</button>
+                <div class="blueprint-header-divider"></div>
+                <button type="button" id="blueprintModalClose" class="blueprint-modal-close-btn" aria-label="Close modal" title="Close Blueprint (Esc)">
+                  ${Icons.cross(16)}
+                </button>
               </div>
             </div>
             <div class="blueprint-modal-body">
@@ -512,6 +515,19 @@ export class ArchitecturePage {
     let startPanY = 0;
     let movedDistance = 0;
 
+    const clampPan = (px, py, scale) => {
+      if (scale <= 1.02) return { x: 0, y: 0 };
+      const vp = blueprintViewport ? blueprintViewport.getBoundingClientRect() : { width: 800, height: 600 };
+      // Allow panning strictly within the scaled overflow range so image can never escape viewport
+      const maxRangeX = Math.max(30, (vp.width * (scale - 1)) / 2 + 40);
+      const maxRangeY = Math.max(30, (vp.height * (scale - 1)) / 2 + 40);
+
+      return {
+        x: Math.max(-maxRangeX, Math.min(maxRangeX, px)),
+        y: Math.max(-maxRangeY, Math.min(maxRangeY, py))
+      };
+    };
+
     const applyTransform = (smooth = true) => {
       if (!blueprintImg) return;
       if (smooth) {
@@ -564,6 +580,9 @@ export class ArchitecturePage {
     zoomInBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
       currentScale = Math.min(currentScale + 0.5, 4.0);
+      const clamped = clampPan(panX, panY, currentScale);
+      panX = clamped.x;
+      panY = clamped.y;
       applyTransform(true);
     });
 
@@ -573,6 +592,10 @@ export class ArchitecturePage {
       if (currentScale <= 1.02) {
         panX = 0;
         panY = 0;
+      } else {
+        const clamped = clampPan(panX, panY, currentScale);
+        panX = clamped.x;
+        panY = clamped.y;
       }
       applyTransform(true);
     });
@@ -606,10 +629,11 @@ export class ArchitecturePage {
         const dy = e.clientY - dragStartY;
         movedDistance = Math.hypot(dx, dy);
 
-        if (currentScale > 1.0) {
-          // Pan actively
-          panX = startPanX + dx;
-          panY = startPanY + dy;
+        if (currentScale > 1.02) {
+          // Pan actively with strict boundary clamping
+          const clamped = clampPan(startPanX + dx, startPanY + dy, currentScale);
+          panX = clamped.x;
+          panY = clamped.y;
           applyTransform(false); // Instant response, zero lag
         }
       });
@@ -641,7 +665,10 @@ export class ArchitecturePage {
             resetZoomAndPan();
           }
         } else {
-          // Finished dragging, re-enable smooth transitions
+          // Finished dragging, re-enable smooth transitions and clamp
+          const clamped = clampPan(panX, panY, currentScale);
+          panX = clamped.x;
+          panY = clamped.y;
           applyTransform(true);
         }
       };
@@ -668,6 +695,10 @@ export class ArchitecturePage {
         if (currentScale <= 1.02) {
           panX = 0;
           panY = 0;
+        } else {
+          const clamped = clampPan(panX, panY, currentScale);
+          panX = clamped.x;
+          panY = clamped.y;
         }
         applyTransform(true);
       }, { passive: false });

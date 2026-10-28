@@ -607,9 +607,16 @@ def build_pdf():
     story.append(Spacer(1, 6))
 
     ss_arch = os.path.join(SCREENSHOT_DIR, '03_architecture_fullpage.png')
+    ss_light = os.path.join(SCREENSHOT_DIR, '03c_architecture_lightmode_packets.png')
+
     if os.path.exists(ss_arch):
-        story.append(Paragraph("<b>Figure 4:</b> Microservice architecture with enlarged component cards.", h2_style))
-        story.append(Image(ss_arch, width=515, height=240))
+        story.append(Paragraph("<b>Figure 4a:</b> Microservice architecture with enlarged component cards.", h2_style))
+        story.append(Image(ss_arch, width=515, height=130))
+        story.append(Spacer(1, 4))
+
+    if os.path.exists(ss_light):
+        story.append(Paragraph("<b>Figure 4b:</b> Light mode packet routing with high-contrast luminous badges.", h2_style))
+        story.append(Image(ss_light, width=515, height=130))
 
     story.append(PageBreak())
 
@@ -619,7 +626,8 @@ def build_pdf():
     story.append(Paragraph("8. Engineering Blueprint Viewer & Interactive Zoom/Pan Controls", h1_style))
     blueprint_intro = """
     The Architecture view provides access to full engineering blueprints for the Rust Tokio engine, the microservice topology,
-    and the Isolation Forest pipeline. The blueprint modal features cursor-targeted zoom and freehand panning.
+    and the Isolation Forest pipeline. The blueprint modal features cursor-targeted zoom, strict boundary-clamped panning,
+    and horizontally-aligned header controls.
     """
     story.append(Paragraph(blueprint_intro, body_style))
     story.append(Spacer(1, 4))

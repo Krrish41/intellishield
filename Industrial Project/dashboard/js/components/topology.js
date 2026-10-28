@@ -271,20 +271,24 @@ export class TopologyCanvas {
 
     if (!clientNode || !proxyNode || !backendNode) return;
 
-    let packetColor = '#10b981'; // green
+    let packetColor = '#10b981'; // dark-mode green
+    let lightPacketColor = '#059669'; // light-mode emerald
     let tag = '200 OK';
     let bannerMsg = 'SIMULATED PACKET: Clean (200 OK) -> Fast-Path Forwarded directly to Origin (0.82 ms)';
 
     if (tier === 'Blocked') {
-      packetColor = '#ef4444'; // red
+      packetColor = '#ef4444';
+      lightPacketColor = '#dc2626';
       tag = '403 DROP';
       bannerMsg = 'SIMULATED ATTACK: Credential Stuffing -> Intercepted at Proxy Gateway in 0.04 ms (Origin Protected)';
     } else if (tier === 'Throttled') {
-      packetColor = '#f59e0b'; // amber
+      packetColor = '#f59e0b';
+      lightPacketColor = '#d97706';
       tag = '429 THROTTLE';
       bannerMsg = 'SIMULATED ATTACK: Volumetric Surge -> Token Bucket Depleted, Throttled in 0.04 ms (Origin Protected)';
     } else if (tier === 'Monitored') {
-      packetColor = '#38bdf8'; // cyan
+      packetColor = '#38bdf8';
+      lightPacketColor = '#0284c7';
       tag = 'MONITOR';
       bannerMsg = 'SIMULATED TRAFFIC: Borderline Session -> Zero Latency Forward + Async Telemetry Evaluation';
     }
@@ -302,6 +306,7 @@ export class TopologyCanvas {
       radius: 12 * this.dpr,
       maxRadius: 55 * this.dpr,
       color: packetColor,
+      lightColor: lightPacketColor,
       alpha: 1.0
     });
 
@@ -320,6 +325,7 @@ export class TopologyCanvas {
           progress: 0,
           speed: 0.038,
           color: packetColor,
+          lightColor: lightPacketColor,
           tag,
           trail: [],
           tier,
@@ -332,6 +338,7 @@ export class TopologyCanvas {
               radius: 16 * this.dpr,
               maxRadius: 65 * this.dpr,
               color: packetColor,
+              lightColor: lightPacketColor,
               alpha: 1.0
             });
             this.highlightedNodeId = 'proxy';
@@ -347,6 +354,7 @@ export class TopologyCanvas {
                 progress: 0,
                 speed: 0.045,
                 color: '#ef4444',
+                lightColor: '#dc2626',
                 tag: '403 REJECT',
                 trail: [],
                 tier,
@@ -365,6 +373,7 @@ export class TopologyCanvas {
                 progress: 0,
                 speed: 0.045,
                 color: '#f59e0b',
+                lightColor: '#d97706',
                 tag: '429 BACKOFF',
                 trail: [],
                 tier,
@@ -382,6 +391,7 @@ export class TopologyCanvas {
               progress: 0,
               speed: 0.042,
               color: packetColor,
+              lightColor: lightPacketColor,
               tag: '200 FORWARD',
               trail: [],
               tier,
@@ -394,6 +404,7 @@ export class TopologyCanvas {
                   radius: 14 * this.dpr,
                   maxRadius: 50 * this.dpr,
                   color: '#10b981',
+                  lightColor: '#059669',
                   alpha: 1.0
                 });
 
@@ -406,6 +417,7 @@ export class TopologyCanvas {
                   progress: 0,
                   speed: 0.045,
                   color: '#10b981',
+                  lightColor: '#059669',
                   tag: '200 OK RES',
                   trail: [],
                   tier,
@@ -420,6 +432,7 @@ export class TopologyCanvas {
                       progress: 0,
                       speed: 0.045,
                       color: '#10b981',
+                      lightColor: '#059669',
                       tag: 'STREAM DONE',
                       trail: [],
                       tier,
@@ -440,6 +453,7 @@ export class TopologyCanvas {
                 progress: 0,
                 speed: 0.035,
                 color: '#818cf8',
+                lightColor: '#4f46e5',
                 tag: 'ASYNC TELEMETRY',
                 trail: [],
                 tier,
@@ -453,6 +467,7 @@ export class TopologyCanvas {
                     progress: 0,
                     speed: 0.035,
                     color: '#818cf8',
+                    lightColor: '#4f46e5',
                     tag: '8D BATCH',
                     trail: [],
                     tier,
@@ -467,6 +482,7 @@ export class TopologyCanvas {
                         progress: 0,
                         speed: 0.032,
                         color: '#f59e0b',
+                        lightColor: '#d97706',
                         tag: 'SCORE [0.08]',
                         trail: [],
                         tier,
@@ -619,7 +635,7 @@ export class TopologyCanvas {
       ctx.save();
       ctx.beginPath();
       ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = sw.color;
+      ctx.strokeStyle = colors.isLight ? (sw.lightColor || sw.color) : sw.color;
       ctx.globalAlpha = sw.alpha;
       ctx.lineWidth = 2.5 * dpr;
       ctx.stroke();
@@ -648,23 +664,34 @@ export class TopologyCanvas {
       p.trail.unshift({ x: curX, y: curY });
       if (p.trail.length > 5) p.trail.pop();
 
+      const activeColor = colors.isLight ? (p.lightColor || p.color) : p.color;
+
       // Draw particle trail
       for (let tIdx = 0; tIdx < p.trail.length; tIdx++) {
         const pt = p.trail[tIdx];
-        const trailAlpha = (1 - tIdx / p.trail.length) * 0.45;
+        const trailAlpha = (1 - tIdx / p.trail.length) * (colors.isLight ? 0.6 : 0.45);
         const trailRad = (6 - tIdx) * dpr;
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, Math.max(2, trailRad), 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
+        ctx.fillStyle = activeColor;
         ctx.globalAlpha = trailAlpha;
         ctx.fill();
         ctx.globalAlpha = 1.0;
       }
 
+      // Luminous outer halo ring in light mode so packets stay bright and prominent
+      if (colors.isLight) {
+        ctx.beginPath();
+        ctx.arc(curX, curY, 9.5 * dpr, 0, Math.PI * 2);
+        ctx.strokeStyle = activeColor;
+        ctx.lineWidth = 1.6 * dpr;
+        ctx.stroke();
+      }
+
       // Main Packet Sphere
       ctx.beginPath();
       ctx.arc(curX, curY, 7 * dpr, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
+      ctx.fillStyle = activeColor;
       ctx.fill();
 
       // Bright inner spark
@@ -677,19 +704,29 @@ export class TopologyCanvas {
       if (p.tag) {
         ctx.font = `bold ${8.5 * dpr}px monospace`;
         const tagMetrics = ctx.measureText(p.tag);
-        const tagW = tagMetrics.width + 10 * dpr;
-        const tagH = 14 * dpr;
-        const tagY = curY - 16 * dpr;
+        const tagW = tagMetrics.width + 12 * dpr;
+        const tagH = 16 * dpr;
+        const tagY = curY - 17 * dpr;
+
+        ctx.save();
+        if (colors.isLight) {
+          ctx.shadowColor = 'rgba(15, 23, 42, 0.16)';
+          ctx.shadowBlur = 6 * dpr;
+          ctx.shadowOffsetY = 2 * dpr;
+        }
 
         ctx.beginPath();
-        ctx.roundRect(curX - tagW / 2, tagY - tagH / 2, tagW, tagH, 3 * dpr);
-        ctx.fillStyle = colors.isLight ? 'rgba(15, 23, 42, 0.85)' : 'rgba(5, 8, 17, 0.9)';
+        ctx.roundRect(curX - tagW / 2, tagY - tagH / 2, tagW, tagH, 4 * dpr);
+        ctx.fillStyle = colors.isLight ? '#ffffff' : 'rgba(5, 8, 17, 0.92)';
         ctx.fill();
-        ctx.strokeStyle = p.color;
-        ctx.lineWidth = 1 * dpr;
+        ctx.restore();
+
+        ctx.strokeStyle = activeColor;
+        ctx.lineWidth = (colors.isLight ? 1.5 : 1.0) * dpr;
         ctx.stroke();
 
-        ctx.fillStyle = p.color;
+        ctx.fillStyle = activeColor;
+        ctx.font = `bold ${8.5 * dpr}px monospace`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(p.tag, curX, tagY);

@@ -761,65 +761,128 @@ input[type="range"]::-webkit-slider-thumb:hover {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 14px 20px;
+  padding: 10px 18px;
   border-bottom: 1px solid var(--border-subtle);
   background: var(--bg-surface-elevated);
+  flex-shrink: 0;
+  min-height: 54px;
+  flex-wrap: nowrap;
 }
 
-.blueprint-modal-close {
-  background: transparent;
-  border: none;
-  font-size: 1.8rem;
-  line-height: 1;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  transition: color 0.15s ease, background 0.15s ease;
+.blueprint-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
 }
 
-.blueprint-modal-close:hover {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.15);
+.blueprint-modal-title {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 520px;
+}
+
+.blueprint-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+
+.blueprint-zoom-hint {
+  font-size: 0.76rem;
+  color: var(--primary-cyan);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .blueprint-zoom-hint {
+    display: none;
+  }
 }
 
 .blueprint-zoom-toolbar {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  background: var(--bg-surface-elevated);
-  padding: 3px 6px;
+  gap: 2px;
+  background: var(--bg-card-solid);
+  padding: 2px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
+  height: 32px;
+  box-sizing: border-box;
 }
 
 .btn-zoom-tool {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  height: 26px;
+  min-width: 26px;
   background: transparent;
-  color: var(--text-primary);
-  border: 1px solid transparent;
-  padding: 4px 8px;
+  color: var(--text-secondary);
+  border: none;
+  padding: 0 7px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   line-height: 1;
   transition: all 0.15s ease;
 }
 
 .btn-zoom-tool:hover {
-  background: rgba(0, 240, 255, 0.12);
+  background: rgba(0, 240, 255, 0.14);
   color: var(--primary-cyan);
-  border-color: rgba(0, 240, 255, 0.3);
 }
 
 .btn-zoom-reset {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  padding: 4px 10px;
+  padding: 0 8px;
+}
+
+.blueprint-header-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-subtle);
+}
+
+.blueprint-modal-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.blueprint-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #ef4444;
+}
+
+[data-theme="light"] .blueprint-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #dc2626;
 }
 
 .blueprint-modal-body {
