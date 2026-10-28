@@ -97,14 +97,36 @@
 .btn-primary {
   background: linear-gradient(135deg, var(--primary-cyan-dim), var(--primary-blue));
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.20);
   box-shadow: 0 4px 14px -2px rgba(2, 132, 199, 0.4);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--primary-cyan), var(--primary-cyan-dim));
-  box-shadow: 0 6px 20px -2px rgba(0, 240, 255, 0.5);
+  background: linear-gradient(135deg, #00f0ff, #38bdf8);
+  color: #040814 !important;
+  font-weight: 700;
+  border-color: #00f0ff;
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.65), 0 4px 16px rgba(0, 0, 0, 0.5);
   transform: translateY(-1.5px);
+}
+
+.btn-primary:hover span,
+.btn-primary:hover svg {
+  color: #040814 !important;
+  stroke: #040814 !important;
+}
+
+[data-theme="light"] .btn-primary:hover {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff !important;
+  border-color: #0284c7;
+  box-shadow: 0 6px 20px -2px rgba(2, 132, 199, 0.45);
+}
+
+[data-theme="light"] .btn-primary:hover span,
+[data-theme="light"] .btn-primary:hover svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
 }
 
 .btn-secondary {
@@ -761,37 +783,98 @@ input[type="range"]::-webkit-slider-thumb:hover {
   background: rgba(239, 68, 68, 0.15);
 }
 
+.blueprint-zoom-toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-surface-elevated);
+  padding: 3px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-zoom-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.btn-zoom-tool:hover {
+  background: rgba(0, 240, 255, 0.12);
+  color: var(--primary-cyan);
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+.btn-zoom-reset {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+}
+
 .blueprint-modal-body {
-  overflow: auto;
+  overflow: hidden;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #02050c;
-  padding: 20px;
+  padding: 0;
   position: relative;
+  user-select: none;
+  touch-action: none;
 }
 
 .blueprint-viewport {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
-  min-height: 480px;
-  overflow: auto;
-}
-
-.blueprint-zoomable-img {
-  max-width: 100%;
-  max-height: 72vh;
-  object-fit: contain;
-  cursor: crosshair !important;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  transform-origin: center center;
+  min-height: 520px;
+  max-height: 76vh;
+  overflow: hidden;
+  cursor: zoom-in;
+  touch-action: none;
   user-select: none;
 }
 
-.blueprint-zoomable-img.zoomed {
-  transform: scale(2.0);
+.blueprint-viewport.can-pan {
+  cursor: grab;
+}
+
+.blueprint-viewport.is-dragging {
+  cursor: grabbing !important;
+}
+
+.blueprint-zoomable-img {
+  max-width: 95%;
+  max-height: 72vh;
+  object-fit: contain;
+  cursor: zoom-in;
+  user-select: none;
+  -webkit-user-drag: none;
+  touch-action: none;
+  pointer-events: auto;
+  will-change: transform;
+}
+
+.blueprint-zoomable-img.is-zoomed {
+  cursor: grab;
+}
+
+.blueprint-zoomable-img.is-dragging {
+  cursor: grabbing !important;
+  transition: none !important;
 }

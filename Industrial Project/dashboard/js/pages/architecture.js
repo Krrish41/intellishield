@@ -354,7 +354,7 @@ export class ArchitecturePage {
           <div id="drawerNodeBody" style="display: flex; flex-direction: column; gap: 16px;"></div>
         </aside>
 
-        <!-- Engineering Blueprint Enlargement & Zoom Modal -->
+        <!-- Engineering Blueprint Enlargement & Interactive Zoom/Pan Modal -->
         <div id="blueprintModal" class="blueprint-modal-backdrop" role="dialog" aria-modal="true" aria-label="High-Resolution Blueprint Viewer">
           <div class="blueprint-modal-card">
             <div class="blueprint-modal-header">
@@ -362,16 +362,27 @@ export class ArchitecturePage {
                 <span class="badge badge-clean">HIGH-RESOLUTION BLUEPRINT</span>
                 <h4 id="blueprintModalHeading" style="margin: 0; font-size: 0.95rem; color: var(--text-primary);"></h4>
               </div>
-              <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                 <span id="blueprintZoomHint" style="font-size: 0.78rem; color: var(--primary-cyan); font-family: var(--font-mono);">
-                  Click image to toggle 2x zoom
+                  Click point to zoom &bull; Drag to pan &bull; Scroll wheel
                 </span>
+                <div class="blueprint-zoom-toolbar">
+                  <button type="button" id="blueprintZoomIn" class="btn-zoom-tool" title="Zoom In (+)" aria-label="Zoom In">
+                    ${Icons.plus(15)}
+                  </button>
+                  <button type="button" id="blueprintZoomOut" class="btn-zoom-tool" title="Zoom Out (-)" aria-label="Zoom Out">
+                    ${Icons.minus(15)}
+                  </button>
+                  <button type="button" id="blueprintZoomReset" class="btn-zoom-tool btn-zoom-reset" title="Reset Zoom (100%)">
+                    100%
+                  </button>
+                </div>
                 <button id="blueprintModalClose" class="blueprint-modal-close" aria-label="Close modal">&times;</button>
               </div>
             </div>
             <div class="blueprint-modal-body">
               <div class="blueprint-viewport" id="blueprintViewport">
-                <img id="blueprintModalImg" src="" alt="Enlarged Engineering Blueprint" class="blueprint-zoomable-img">
+                <img id="blueprintModalImg" src="" alt="Enlarged Engineering Blueprint" class="blueprint-zoomable-img" draggable="false">
               </div>
             </div>
           </div>
@@ -478,27 +489,189 @@ export class ArchitecturePage {
       );
     });
 
-    // Blueprint Enlargement Modal handlers
+    // Blueprint Enlargement Modal handlers with Cursor-Point Zoom & Pan
     const blueprintModal = this.container.querySelector('#blueprintModal');
+    const blueprintViewport = this.container.querySelector('#blueprintViewport');
     const blueprintImg = this.container.querySelector('#blueprintModalImg');
     const blueprintHeading = this.container.querySelector('#blueprintModalHeading');
     const blueprintHint = this.container.querySelector('#blueprintZoomHint');
     const blueprintCloseBtn = this.container.querySelector('#blueprintModalClose');
+    const zoomInBtn = this.container.querySelector('#blueprintZoomIn');
+    const zoomOutBtn = this.container.querySelector('#blueprintZoomOut');
+    const zoomResetBtn = this.container.querySelector('#blueprintZoomReset');
+
+    let currentScale = 1.0;
+    let panX = 0;
+    let panY = 0;
+    let originX = 50; // percentage
+    let originY = 50; // percentage
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let startPanX = 0;
+    let startPanY = 0;
+    let movedDistance = 0;
+
+    const applyTransform = (smooth = true) => {
+      if (!blueprintImg) return;
+      if (smooth) {
+        blueprintImg.style.transition = 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
+      } else {
+        blueprintImg.style.transition = 'none';
+      }
+      blueprintImg.style.transformOrigin = `${originX}% ${originY}%`;
+      blueprintImg.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${currentScale})`;
+
+      if (currentScale > 1.02) {
+        blueprintImg.classList.add('is-zoomed');
+        blueprintViewport?.classList.add('can-pan');
+        if (blueprintHint) {
+          blueprintHint.textContent = `Zoom: ${Math.round(currentScale * 100)}% \u2022 Drag to Pan \u2022 Click to Reset`;
+        }
+      } else {
+        blueprintImg.classList.remove('is-zoomed');
+        blueprintViewport?.classList.remove('can-pan');
+        if (blueprintHint) {
+          blueprintHint.textContent = 'Click point to zoom \u2022 Drag to pan \u2022 Scroll wheel';
+        }
+      }
+    };
+
+    const resetZoomAndPan = () => {
+      currentScale = 1.0;
+      panX = 0;
+      panY = 0;
+      originX = 50;
+      originY = 50;
+      applyTransform(true);
+    };
 
     const openBlueprintModal = (src, title) => {
       if (!blueprintModal || !blueprintImg) return;
       blueprintImg.src = src;
-      blueprintImg.classList.remove('zoomed');
+      resetZoomAndPan();
       if (blueprintHeading) blueprintHeading.textContent = title;
-      if (blueprintHint) blueprintHint.textContent = 'Click image to toggle 2x zoom';
       blueprintModal.classList.add('open');
     };
 
     const closeBlueprintModal = () => {
       if (!blueprintModal || !blueprintImg) return;
       blueprintModal.classList.remove('open');
-      blueprintImg.classList.remove('zoomed');
+      resetZoomAndPan();
     };
+
+    // Zoom buttons
+    zoomInBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentScale = Math.min(currentScale + 0.5, 4.0);
+      applyTransform(true);
+    });
+
+    zoomOutBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentScale = Math.max(currentScale - 0.5, 1.0);
+      if (currentScale <= 1.02) {
+        panX = 0;
+        panY = 0;
+      }
+      applyTransform(true);
+    });
+
+    zoomResetBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      resetZoomAndPan();
+    });
+
+    // Pointer-based Pan and Click-to-Point-Zoom
+    if (blueprintViewport && blueprintImg) {
+      blueprintViewport.addEventListener('pointerdown', (e) => {
+        // Only primary mouse button or touch
+        if (e.button !== 0 && e.pointerType === 'mouse') return;
+        isDragging = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        startPanX = panX;
+        startPanY = panY;
+        movedDistance = 0;
+        blueprintViewport.classList.add('is-dragging');
+        blueprintImg.classList.add('is-dragging');
+        try {
+          blueprintViewport.setPointerCapture(e.pointerId);
+        } catch (_) {}
+      });
+
+      blueprintViewport.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+        movedDistance = Math.hypot(dx, dy);
+
+        if (currentScale > 1.0) {
+          // Pan actively
+          panX = startPanX + dx;
+          panY = startPanY + dy;
+          applyTransform(false); // Instant response, zero lag
+        }
+      });
+
+      const endDrag = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        blueprintViewport.classList.remove('is-dragging');
+        blueprintImg.classList.remove('is-dragging');
+        try {
+          blueprintViewport.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+
+        // If pointer barely moved (< 6px), treat as a click!
+        if (movedDistance < 6) {
+          if (currentScale <= 1.05) {
+            // Zoom into the EXACT clicked point!
+            const rect = blueprintImg.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            originX = Math.max(0, Math.min(100, (clickX / (rect.width || 1)) * 100));
+            originY = Math.max(0, Math.min(100, (clickY / (rect.height || 1)) * 100));
+            currentScale = 2.4;
+            panX = 0;
+            panY = 0;
+            applyTransform(true);
+          } else {
+            // Already zoomed: toggle back to 1x
+            resetZoomAndPan();
+          }
+        } else {
+          // Finished dragging, re-enable smooth transitions
+          applyTransform(true);
+        }
+      };
+
+      blueprintViewport.addEventListener('pointerup', endDrag);
+      blueprintViewport.addEventListener('pointercancel', endDrag);
+
+      // Mouse wheel zoom
+      blueprintViewport.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.35 : -0.35;
+        const prevScale = currentScale;
+        currentScale = Math.max(1.0, Math.min(4.5, currentScale + delta));
+
+        if (prevScale === 1.0 && currentScale > 1.0) {
+          // Center origin on cursor if zooming from 1x
+          const rect = blueprintImg.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          const clickY = e.clientY - rect.top;
+          originX = Math.max(0, Math.min(100, (clickX / (rect.width || 1)) * 100));
+          originY = Math.max(0, Math.min(100, (clickY / (rect.height || 1)) * 100));
+        }
+
+        if (currentScale <= 1.02) {
+          panX = 0;
+          panY = 0;
+        }
+        applyTransform(true);
+      }, { passive: false });
+    }
 
     // Open when clicking any blueprint card
     this.container.querySelectorAll('.blueprint-card-trigger').forEach(card => {
@@ -509,17 +682,6 @@ export class ArchitecturePage {
       });
     });
 
-    // Toggle 2x zoom on image click
-    blueprintImg?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      blueprintImg.classList.toggle('zoomed');
-      if (blueprintHint) {
-        blueprintHint.textContent = blueprintImg.classList.contains('zoomed')
-          ? 'Click image to reset zoom (1x)'
-          : 'Click image to toggle 2x zoom';
-      }
-    });
-
     // Close button click
     blueprintCloseBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -528,7 +690,7 @@ export class ArchitecturePage {
 
     // Close when clicking backdrop outside card
     blueprintModal?.addEventListener('click', (e) => {
-      if (e.target === blueprintModal || e.target.id === 'blueprintViewport') {
+      if (e.target === blueprintModal) {
         closeBlueprintModal();
       }
     });

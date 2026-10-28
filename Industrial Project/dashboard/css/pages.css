@@ -952,13 +952,13 @@
 
 .topology-canvas-stage {
   width: 100%;
-  height: clamp(480px, 62vh, 600px);
+  height: clamp(560px, 72vh, 700px);
   position: relative;
 }
 
 @media (max-width: 768px) {
   .topology-canvas-stage {
-    height: 420px;
+    height: 520px;
   }
 }
 

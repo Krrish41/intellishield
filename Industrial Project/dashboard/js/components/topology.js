@@ -108,18 +108,18 @@ export class TopologyCanvas {
       // Mobile vertical stacked layout
       const cx = w / 2;
       this.nodes = [
-        { id: 'client', label: 'Client (Consumer)', sub: 'HTTP / API Consumer', badge: 'INGRESS', x: cx, y: h * 0.10, w: 220, h: 62, type: 'endpoint', color: '#00f0ff', lightColor: '#0284c7', port: 'Ephemeral', file: 'simulator/live_demo.py', desc: 'Sends incoming HTTP traffic (benign browsing or attack bursts).' },
-        { id: 'proxy', label: 'IntelliShield Proxy', sub: 'Axum / Tokio Core (:8080)', badge: ':8080 GATEWAY', x: cx, y: h * 0.32, w: 240, h: 68, type: 'core', color: '#00f0ff', lightColor: '#0284c7', port: '8080', file: 'core/src/main.rs, proxy.rs', desc: 'Atomic token check, sub-millisecond fast-forwarding, non-blocking telemetry emitter.' },
-        { id: 'backend', label: 'Protected Backend', sub: 'Mock REST Service (:3000)', badge: ':3000 ORIGIN', x: cx, y: h * 0.54, w: 230, h: 64, type: 'backend', color: '#10b981', lightColor: '#059669', port: '3000', file: 'mock_backend/server.py', desc: 'Protected microservice REST API (/users, /products, /auth/login).' },
-        { id: 'telemetry', label: 'Sliding-Window Engine', sub: 'Rolling 5.0s Buffer', badge: '8D BUFFER', x: cx, y: h * 0.74, w: 230, h: 64, type: 'telemetry', color: '#818cf8', lightColor: '#4f46e5', port: 'In-Memory', file: 'core/src/telemetry.rs', desc: 'Calculates 8-dimensional behavioral vector per active IP every 1000 ms.' },
-        { id: 'ml', label: 'ML Anomaly Worker', sub: 'Isolation Forest (:5001)', badge: ':5001 THREAT-ML', x: cx, y: h * 0.92, w: 230, h: 64, type: 'ml', color: '#06b6d4', lightColor: '#0891b2', port: '5001', file: 'ml_engine/ml_worker_server.py', desc: 'Unsupervised Isolation Forest anomaly scoring batch endpoint (/score_batch).' }
+        { id: 'client', label: 'Client (Consumer)', sub: 'HTTP / API Consumer', badge: 'INGRESS', x: cx, y: h * 0.10, w: 280, h: 76, type: 'endpoint', color: '#00f0ff', lightColor: '#0284c7', port: 'Ephemeral', file: 'simulator/live_demo.py', desc: 'Sends incoming HTTP traffic (benign browsing or attack bursts).' },
+        { id: 'proxy', label: 'IntelliShield Proxy', sub: 'Axum / Tokio Core (:8080)', badge: ':8080 GATEWAY', x: cx, y: h * 0.32, w: 310, h: 84, type: 'core', color: '#00f0ff', lightColor: '#0284c7', port: '8080', file: 'core/src/main.rs, proxy.rs', desc: 'Atomic token check, sub-millisecond fast-forwarding, non-blocking telemetry emitter.' },
+        { id: 'backend', label: 'Protected Backend', sub: 'Mock REST Service (:3000)', badge: ':3000 ORIGIN', x: cx, y: h * 0.54, w: 280, h: 76, type: 'backend', color: '#10b981', lightColor: '#059669', port: '3000', file: 'mock_backend/server.py', desc: 'Protected microservice REST API (/users, /products, /auth/login).' },
+        { id: 'telemetry', label: 'Sliding-Window Engine', sub: 'Rolling 5.0s Buffer', badge: '8D BUFFER', x: cx, y: h * 0.74, w: 300, h: 78, type: 'telemetry', color: '#818cf8', lightColor: '#4f46e5', port: 'In-Memory', file: 'core/src/telemetry.rs', desc: 'Calculates 8-dimensional behavioral vector per active IP every 1000 ms.' },
+        { id: 'ml', label: 'ML Anomaly Worker', sub: 'Isolation Forest (:5001)', badge: ':5001 THREAT-ML', x: cx, y: h * 0.92, w: 290, h: 78, type: 'ml', color: '#06b6d4', lightColor: '#0891b2', port: '5001', file: 'ml_engine/ml_worker_server.py', desc: 'Unsupervised Isolation Forest anomaly scoring batch endpoint (/score_batch).' }
       ];
     } else {
-      // Desktop horizontal dual-path layout with generous card boxes
-      const leftX = w * 0.15;
+      // Desktop horizontal dual-path layout with generous enlarged card boxes
+      const leftX = w * 0.16;
       const proxyX = w * 0.50;
-      const backendX = w * 0.85;
-      const upperY = h * 0.30;
+      const backendX = w * 0.84;
+      const upperY = h * 0.32;
       const lowerY = h * 0.76;
 
       this.nodes = [
@@ -130,8 +130,8 @@ export class TopologyCanvas {
           badge: 'INGRESS',
           x: leftX, 
           y: upperY, 
-          w: 200, 
-          h: 72, 
+          w: 280, 
+          h: 96, 
           type: 'endpoint', 
           color: '#00f0ff', 
           lightColor: '#0284c7',
@@ -146,8 +146,8 @@ export class TopologyCanvas {
           badge: ':8080 GATEWAY',
           x: proxyX, 
           y: upperY, 
-          w: 245, 
-          h: 82, 
+          w: 340, 
+          h: 104, 
           type: 'core', 
           color: '#00f0ff', 
           lightColor: '#0284c7',
@@ -162,8 +162,8 @@ export class TopologyCanvas {
           badge: ':3000 ORIGIN',
           x: backendX, 
           y: upperY, 
-          w: 220, 
-          h: 72, 
+          w: 300, 
+          h: 96, 
           type: 'backend', 
           color: '#10b981', 
           lightColor: '#059669',
@@ -178,8 +178,8 @@ export class TopologyCanvas {
           badge: '8D BUFFER',
           x: proxyX, 
           y: lowerY, 
-          w: 240, 
-          h: 74, 
+          w: 340, 
+          h: 98, 
           type: 'telemetry', 
           color: '#818cf8', 
           lightColor: '#4f46e5',
@@ -194,8 +194,8 @@ export class TopologyCanvas {
           badge: ':5001 THREAT-ML',
           x: backendX, 
           y: lowerY, 
-          w: 230, 
-          h: 74, 
+          w: 300, 
+          h: 98, 
           type: 'ml', 
           color: '#06b6d4', 
           lightColor: '#0891b2',
@@ -727,33 +727,33 @@ export class TopologyCanvas {
 
       // Card Base
       ctx.beginPath();
-      ctx.roundRect(node.x - halfW, node.y - halfH, node.w * dpr, node.h * dpr, 10 * dpr);
+      ctx.roundRect(node.x - halfW, node.y - halfH, node.w * dpr, node.h * dpr, 12 * dpr);
       ctx.fillStyle = colors.isLight ? '#ffffff' : '#080e1b';
       ctx.fill();
 
       ctx.strokeStyle = isHighlighted 
         ? (colors.isLight ? '#0284c7' : '#00f0ff') 
         : (isHovered ? (colors.isLight ? '#38bdf8' : 'rgba(56, 189, 248, 0.4)') : (colors.isLight ? '#cbd5e1' : 'rgba(255, 255, 255, 0.12)'));
-      ctx.lineWidth = (isHighlighted ? 2.5 : (isHovered ? 2 : 1.2)) * dpr;
+      ctx.lineWidth = (isHighlighted ? 2.8 : (isHovered ? 2.2 : 1.4)) * dpr;
       ctx.stroke();
 
       // Top Accent Line
       ctx.beginPath();
-      ctx.roundRect(node.x - halfW, node.y - halfH, node.w * dpr, 4 * dpr, [10 * dpr, 10 * dpr, 0, 0]);
+      ctx.roundRect(node.x - halfW, node.y - halfH, node.w * dpr, 5 * dpr, [12 * dpr, 12 * dpr, 0, 0]);
       ctx.fillStyle = node.color;
       ctx.fill();
 
       // Badge Chip (Top Right inside box)
       if (node.badge) {
-        ctx.font = `bold ${7.5 * dpr}px monospace`;
+        ctx.font = `bold ${9.5 * dpr}px monospace`;
         const bMetrics = ctx.measureText(node.badge);
-        const bW = bMetrics.width + 8 * dpr;
-        const bH = 12 * dpr;
-        const bX = node.x + halfW - bW / 2 - 8 * dpr;
-        const bY = node.y - halfH + bH / 2 + 8 * dpr;
+        const bW = bMetrics.width + 12 * dpr;
+        const bH = 18 * dpr;
+        const bX = node.x + halfW - bW / 2 - 12 * dpr;
+        const bY = node.y - halfH + bH / 2 + 12 * dpr;
 
         ctx.beginPath();
-        ctx.roundRect(bX - bW / 2, bY - bH / 2, bW, bH, 3 * dpr);
+        ctx.roundRect(bX - bW / 2, bY - bH / 2, bW, bH, 4 * dpr);
         ctx.fillStyle = colors.isLight ? 'rgba(241, 245, 249, 0.95)' : 'rgba(15, 23, 42, 0.85)';
         ctx.fill();
         ctx.strokeStyle = node.color;
@@ -769,14 +769,14 @@ export class TopologyCanvas {
       // Node Primary Label (Big & High-Contrast)
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
-      ctx.font = `bold ${12.5 * dpr}px sans-serif`;
+      ctx.font = `bold ${15.5 * dpr}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
       ctx.fillStyle = colors.isLight ? '#0f172a' : '#f8fafc';
-      ctx.fillText(node.label, node.x - halfW + 14 * dpr, node.y - 6 * dpr);
+      ctx.fillText(node.label, node.x - halfW + 18 * dpr, node.y - 10 * dpr);
 
       // Node Subtitle (Clear Monospace)
-      ctx.font = `${9.5 * dpr}px monospace`;
+      ctx.font = `500 ${11.5 * dpr}px var(--font-mono, "SF Mono", Consolas, monospace)`;
       ctx.fillStyle = colors.isLight ? '#475569' : '#94a3b8';
-      ctx.fillText(node.sub, node.x - halfW + 14 * dpr, node.y + 14 * dpr);
+      ctx.fillText(node.sub, node.x - halfW + 18 * dpr, node.y + 16 * dpr);
     }
 
     // 5. Live Interactive Status Banner Overlay at the Top

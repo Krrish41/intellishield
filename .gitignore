@@ -83,7 +83,14 @@ IntelliShield_Review2_Master_Executive_Handbook.pdf
 IntelliShield_Best_Project_Video_Presentation.*
 Industrial Project/presentations/
 Industrial Project/reports/
+!Industrial Project/reports/IntelliShield_Dashboard_UI_and_Architecture_Guide.pdf
+!Industrial Project/reports/pdf_inspection_pages/
+!Industrial Project/reports/pdf_inspection_pages/**
 Industrial Project/scripts/
+!Industrial Project/scripts/generate_ui_explanation_guide_pdf.py
+!Industrial Project/scripts/capture_full_page_screenshots.py
+!Industrial Project/dashboard/screenshots/
+!Industrial Project/dashboard/screenshots/**
 ~$*
 */~$*
 */*/~$*
