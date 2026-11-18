@@ -188,9 +188,9 @@ intellishield/
 
 ## Authors & Academic Citation
 
-Developed as a capstone engineering research initiative at Vellore Institute of Technology (VIT), Chennai:
+Developed as a capstone engineering research initiative at Vellore Institute of Technology (VIT), Vellore:
 
-- **Krrish Ranjan** — School of Computer Science and Engineering, VIT Chennai ([krrish41@gmail.com](mailto:krrish41@gmail.com))
+- **Krrish Ranjan** — School of Computer Science and Engineering, VIT Vellore ([krrish41@gmail.com](mailto:krrish41@gmail.com))
 - **Aashman Gupta** — School of Computer Science and Engineering, VIT Chennai
 - **Krishnaraj N** — Associate Professor, School of Computer Science and Engineering, VIT Chennai
 
